@@ -77,7 +77,7 @@
     ]
   },
   {
-    "path": "http://antsk.cn/",
+    "path": "/",
     "name": "文档",
     "key": "antskdoc",
     "icon": "question-circle"
