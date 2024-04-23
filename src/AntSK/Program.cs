@@ -68,17 +68,17 @@ builder.Services.AddBackgroundTaskBroker().AddHandler<ImportKMSTaskReq, BackGrou
            .WithCuda(false)
            .WithLogCallback((level, message) => {
                Console.WriteLine($"[llama {level}]: {message.TrimEnd('\n')}");
-           });
+            });
     }
     else if (LLamaSharpOption.RunType.ToUpper() == "GPU")
     {
         NativeLibraryConfig
         .Instance
         .WithCuda(true)
-        .WithAvx(NativeLibraryConfig.AvxLevel.Avx)
         .WithLogCallback((level, message) => {
             Console.WriteLine($"[llama {level}]: {message.TrimEnd('\n')}");
-        });
+         })
+        .WithAvx(NativeLibraryConfig.AvxLevel.Avx);
     }
 }
 
