@@ -78,7 +78,7 @@
   },
   {
     "path": "/",
-    "name": "文档",
+    "name": "概览",
     "key": "antskdoc",
     "icon": "question-circle"
   }
