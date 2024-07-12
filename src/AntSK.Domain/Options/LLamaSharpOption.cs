@@ -3,6 +3,7 @@
     public class LLamaSharpOption
     {
         public static string RunType { get; set; }
-        public static string FileDirectory { get; set; } = Directory.GetCurrentDirectory();
+        public static uint? ContextSize { get; set; }
+        public static int? GpuLayerCount { get; set; }
     }
 }

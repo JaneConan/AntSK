@@ -226,6 +226,13 @@ namespace AntSK.Domain.Domain.Service
                         TextModel = chatModel.ModelName
                     }, null, chatHttpClient);
                     break;
+                case Model.Enum.AIType.Ollama:
+                    memory.WithOpenAITextGeneration(new OpenAIConfig()
+                    {
+                        APIKey = "NotNull",
+                        TextModel = chatModel.ModelName
+                    }, null, chatHttpClient);
+                    break;
                 case Model.Enum.AIType.DashScope:
                     memory.WithDashScopeTextGeneration(new Cnblogs.KernelMemory.AI.DashScope.DashScopeConfig
                     {
@@ -296,7 +303,7 @@ namespace AntSK.Domain.Domain.Service
                     {
                         DocumentId = item.GetDocumentId(),
                         Text = item.GetPartitionText(),
-                        Url = item.GetWebPageUrl(),
+                        Url = item.GetWebPageUrl(KmsConstantcs.KmsIndex),
                         LastUpdate = item.GetLastUpdate().LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss"),
                         File = item.GetFileName()
                     }));

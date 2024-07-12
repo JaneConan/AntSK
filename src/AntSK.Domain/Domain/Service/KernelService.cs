@@ -22,6 +22,8 @@ using Microsoft.KernelMemory;
 using OpenCvSharp.ML;
 using LLamaSharp.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Amazon.Runtime.Internal.Util;
+using Microsoft.Extensions.Logging;
 
 namespace AntSK.Domain.Domain.Service
 {
@@ -33,17 +35,20 @@ namespace AntSK.Domain.Domain.Service
         private readonly FunctionService _functionService;
         private readonly IServiceProvider _serviceProvider;
         private Kernel _kernel;
+        private readonly ILogger<KernelService> _logger;
 
         public KernelService(
               IApis_Repositories apis_Repositories,
               IAIModels_Repositories aIModels_Repositories,
               FunctionService functionService,
-              IServiceProvider serviceProvider)
+              IServiceProvider serviceProvider,
+               ILogger<KernelService> logger)
         {
             _apis_Repositories = apis_Repositories;
             _aIModels_Repositories = aIModels_Repositories;
             _functionService = functionService;
             _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         /// <summary>
@@ -111,7 +116,29 @@ namespace AntSK.Domain.Domain.Service
                     break;
 
                 case Model.Enum.AIType.SparkDesk:
-                    var options = new SparkDeskOptions { AppId = chatModel.EndPoint, ApiSecret = chatModel.ModelKey, ApiKey = chatModel.ModelName, ModelVersion = Sdcb.SparkDesk.ModelVersion.V3_5 };
+
+                    var settings = chatModel.ModelKey.Split("|");
+
+                    Sdcb.SparkDesk.ModelVersion modelVersion = Sdcb.SparkDesk.ModelVersion.V3_5;
+
+                    switch (chatModel.ModelName)
+                    {
+                        case "V3_5":
+                            modelVersion = Sdcb.SparkDesk.ModelVersion.V3_5;
+                            break;
+                        case "V3":
+                            modelVersion = Sdcb.SparkDesk.ModelVersion.V3;
+                            break;
+                        case "V2":
+                            modelVersion = Sdcb.SparkDesk.ModelVersion.V2;
+                            break;
+                        case "V1_5":
+                            modelVersion = Sdcb.SparkDesk.ModelVersion.V1_5;
+                            break;
+                    }
+
+                    SparkDeskOptions options = new SparkDeskOptions { AppId = settings[0], ApiSecret = settings[1], ApiKey = settings[2], ModelVersion = modelVersion };
+                
                     builder.Services.AddKeyedSingleton<ITextGenerationService>("spark-desk", new SparkDeskTextCompletion(options, chatModel.Id));
                     builder.Services.AddKeyedSingleton<IChatCompletionService>("spark-desk-chat", new SparkDeskChatCompletion(options, chatModel.Id));
                     break;
@@ -127,7 +154,14 @@ namespace AntSK.Domain.Domain.Service
                 case Model.Enum.AIType.LLamaFactory:
                     builder.AddOpenAIChatCompletion(
                      modelId: chatModel.ModelName,
-                     apiKey: "123",
+                     apiKey: "NotNull",
+                     httpClient: chatHttpClient
+                       );
+                    break;
+                case AIType.Ollama:
+                    builder.AddOpenAIChatCompletion(
+                     modelId: chatModel.ModelName,
+                     apiKey: "NotNull",
                      httpClient: chatHttpClient
                        );
                     break;
@@ -178,7 +212,6 @@ namespace AntSK.Domain.Domain.Service
 
                             var getParametes = new List<KernelParameterMetadata>() {
                                      new KernelParameterMetadata("jsonbody"){
-                                      Name="json参数字符串",
                                       ParameterType=typeof(string),
                                       Description=$"背景文档:{Environment.NewLine}{api.InputPrompt} {Environment.NewLine}提取出对应的json格式字符串，参考如下格式:{Environment.NewLine}{api.Query}"
                                     }
@@ -217,7 +250,6 @@ namespace AntSK.Domain.Domain.Service
                             //处理json body
                             var postParametes = new List<KernelParameterMetadata>() {
                                     new KernelParameterMetadata("jsonbody"){
-                                      Name="json参数字符串",
                                       ParameterType=typeof(string),
                                       Description=$"背景文档:{Environment.NewLine}{api.InputPrompt} {Environment.NewLine}提取出对应的json格式字符串，参考如下格式:{Environment.NewLine}{api.JsonBody}"
                                     }
@@ -226,7 +258,7 @@ namespace AntSK.Domain.Domain.Service
                             {
                                 try
                                 {
-                                    Console.WriteLine(jsonBody);
+                                    _logger.LogInformation(jsonBody);
                                     RestClient client = new RestClient();
                                     RestRequest request = new RestRequest(api.Url, Method.Post);
                                     foreach (var header in api.Header.ConvertToString().Split("\n"))
@@ -305,7 +337,7 @@ namespace AntSK.Domain.Domain.Service
             KernelFunction sunFun = _kernel.Plugins.GetFunction("ConversationSummaryPlugin", "SummarizeConversation");
             var summary = await _kernel.InvokeAsync(sunFun, new() { ["input"] = $"内容是：{history.ToString()} {Environment.NewLine} 请注意用中文总结" });
             string his = summary.GetValue<string>();
-            var msg = $"history：{Environment.NewLine}{history.ToString()}{Environment.NewLine} user：{questions}{Environment.NewLine}"; ;
+            var msg = $"history：{Environment.NewLine}{his}{Environment.NewLine} user：{questions}{Environment.NewLine}"; 
             return msg;
         }
     }

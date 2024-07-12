@@ -29,6 +29,7 @@ namespace AntSK.Pages.Setting.AIModel
         [Inject] public HttpClient HttpClient { get; set; }
 
         [Inject] protected ILLamaFactoryService _ILLamaFactoryService { get; set; }
+        [Inject] protected IOllamaService _ollamaService { get; set; }
         [Inject] protected IDics_Repositories _IDics_Repositories { get; set; }
 
         [Inject] IConfirmService _confirmService { get; set; }
@@ -55,6 +56,9 @@ namespace AntSK.Pages.Setting.AIModel
         private List<LLamaModel> modelList=new List<LLamaModel>();
         private bool llamaFactoryIsStart = false;
         private Dics llamaFactoryDic= new Dics();
+
+        private List<string> ollamaModelList = new List<string>();
+
         //日志输出
         private  BlazorTerminal blazorTerminal = new BlazorTerminal();
         private TerminalParagraph para;
@@ -86,9 +90,9 @@ namespace AntSK.Pages.Setting.AIModel
                     llamaFactoryIsStart = llamaFactoryDic.Value == "false" ? false : true;
                 }
 
-               
+                ollamaModelList = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "OllamaModelList.txt")).ToList();
                 //目前只支持gguf的 所以筛选一下
-                _modelFiles = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), LLamaSharpOption.FileDirectory)).Where(p=> p.Contains(".gguf")||p.Contains(".ckpt")|| p.Contains(".safetensors")).ToArray();
+                _modelFiles = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), FileDirOption.DirectoryPath)).Where(p=> p.Contains(".gguf")||p.Contains(".ckpt")|| p.Contains(".safetensors")).ToArray();
                 if (!string.IsNullOrEmpty(ModelPath))
                 {
                     string extension = Path.GetExtension(ModelPath);
@@ -167,7 +171,7 @@ namespace AntSK.Pages.Setting.AIModel
 
             _download = DownloadBuilder.New()
             .WithUrl(_downloadUrl)
-            .WithDirectory(Path.Combine(Directory.GetCurrentDirectory(), LLamaSharpOption.FileDirectory))
+            .WithDirectory(Path.Combine(Directory.GetCurrentDirectory(), FileDirOption.DirectoryPath))
             .WithConfiguration(new DownloadConfiguration()
             {
                 ParallelCount = 5,
@@ -195,7 +199,7 @@ namespace AntSK.Pages.Setting.AIModel
             _aiModel.ModelName = _download.Package.FileName;
             _downloadModalVisible = false;
             _downloadStarted = false;
-            _modelFiles = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), LLamaSharpOption.FileDirectory));
+            _modelFiles = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), FileDirOption.DirectoryPath));
             InvokeAsync(StateHasChanged);
         }
 
@@ -234,7 +238,20 @@ namespace AntSK.Pages.Setting.AIModel
             }
 
         }
-      
+
+        private void OnOllamaSearch(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                ollamaModelList = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "OllamaModelList.txt")).ToList(); 
+            }
+            else
+            {
+                ollamaModelList = File.ReadAllLines(Path.Combine(AppContext.BaseDirectory, "OllamaModelList.txt")).ToList().Where(p => p.ToLower().Contains(value.ToLower())).ToList();
+            }
+
+        }
+
         /// <summary>
         /// 启动服务
         /// </summary>
@@ -249,6 +266,7 @@ namespace AntSK.Pages.Setting.AIModel
             _logModalVisible = true;
             llamaFactoryDic.Value = "true";
             _IDics_Repositories.Update(llamaFactoryDic);
+            _ILLamaFactoryService.LogMessageReceived -= CmdLogHandler;
             _ILLamaFactoryService.LogMessageReceived += CmdLogHandler;
             _ILLamaFactoryService.StartLLamaFactory(_aiModel.ModelName, "default");
         }
@@ -260,6 +278,27 @@ namespace AntSK.Pages.Setting.AIModel
             _IDics_Repositories.Update(llamaFactoryDic);
             _ILLamaFactoryService.KillProcess();
         }
+
+        /// <summary>
+        /// Ollama
+        /// </summary>
+        /// <returns></returns>
+        private async Task StartOllamaService()
+        {
+            if (string.IsNullOrEmpty(_aiModel.ModelName))
+            {
+                _ = Message.Error("请先选择模型！", 2);
+                return;
+            }
+            _logModalVisible = true;
+           
+            _ollamaService.LogMessageReceived -= CmdLogHandler;
+            _ollamaService.LogMessageReceived += CmdLogHandler;
+            _ollamaService.StartOllama(_aiModel.ModelName);
+        }
+
+     
+
         private async Task PipInstall()
         {
             var content = "初次使用需要执行pip install，点击确认后可自动执行，是否执行";
@@ -268,6 +307,7 @@ namespace AntSK.Pages.Setting.AIModel
             if (result == ConfirmResult.Yes)
             {
                 _logModalVisible = true;
+                _ILLamaFactoryService.LogMessageReceived -= CmdLogHandler;
                 _ILLamaFactoryService.LogMessageReceived += CmdLogHandler;
                 _ILLamaFactoryService.PipInstall();
             }
@@ -355,10 +395,17 @@ namespace AntSK.Pages.Setting.AIModel
         private void AITypeChange(AIType aiType) 
         {
             switch (aiType)
-            { 
+            {
+                case AIType.OpenAI:
+                    _aiModel.EndPoint = "https://api.antsk.cn/";
+                    break;
                 case AIType.LLamaFactory:
                     _aiModel.EndPoint = "http://localhost:8000/";
                     _aiModel.AIModelType=AIModelType.Chat;
+                    break;
+                case AIType.Ollama:
+                    _aiModel.EndPoint = "http://localhost:11434/";
+                    _aiModel.AIModelType = AIModelType.Chat;
                     break;
                 case AIType.StableDiffusion:
                     _aiModel.AIModelType = AIModelType.Image;
