@@ -188,11 +188,6 @@
         <member name="M:AntSK.Domain.Domain.Other.KMExcelHandler.InvokeAsync(Microsoft.KernelMemory.Pipeline.DataPipeline,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="F:AntSK.Domain.Domain.Other.LLamaConfig.dicLLamaWeights">
-            <summary>
-            避免模型重复加载，本地缓存
-            </summary>
-        </member>
         <member name="P:AntSK.Domain.Domain.Other.QAHandler.StepName">
             <inheritdoc />
         </member>
@@ -255,6 +250,53 @@
             <param name="_kernel"></param>
             <param name="questions"></param>
             <param name="history"></param>
+            <returns></returns>
+        </member>
+        <member name="P:AntSK.Domain.Result.Code">
+            <summary>
+            错误码，0是正常返回，异常返回错误码
+            </summary>
+        </member>
+        <member name="P:AntSK.Domain.Result.Data">
+            <summary>
+            返回数据
+            </summary>
+        </member>
+        <member name="P:AntSK.Domain.Result.Message">
+            <summary>
+            返回信息详情
+            </summary>
+        </member>
+        <member name="M:AntSK.Domain.ResponseResult.Success">
+            <summary>
+            执行成功
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AntSK.Domain.ResponseResult.Success(System.Object,System.String,System.String)">
+            <summary>
+            执行成功
+            </summary>
+            <param name="data"></param>
+            <param name="code"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AntSK.Domain.ResponseResult.Error(System.Object,System.String,System.String)">
+            <summary>
+            执行失败
+            </summary>
+            <param name="data"></param>
+            <param name="code"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AntSK.Domain.ResponseResult.Error(System.String,System.String)">
+            <summary>
+            执行失败
+            </summary>
+            <param name="code"></param>
+            <param name="message"></param>
             <returns></returns>
         </member>
         <member name="P:AntSK.Domain.Options.DBConnectionOption.DbType">
@@ -921,6 +963,20 @@
             忽略大小写匹配
             </summary>
             <param name="s"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AntSK.Domain.Utils.ConvertUtils.Unescape(System.String)">
+            <summary>
+            \uxxxx转中文,保留换行符号
+            </summary>
+            <param name="unicodeString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AntSK.Domain.Utils.ConvertUtils.IsStream(System.String)">
+            <summary>
+            是否为流式请求
+            </summary>
             <param name="value"></param>
             <returns></returns>
         </member>

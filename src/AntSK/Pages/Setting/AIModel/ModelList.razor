@@ -39,7 +39,11 @@
                             delete(async ()=>await Delete(context.Id))
                              }" Style="width:100%">
                                 <div class="listContent" style="width:100%">
-                                    <div class="listContentItem" style="width:15%">
+                                    <div class="listContentItem" style="width:20%">
+                                        <b>模型ID</b>
+                                        <p title="@context.Id">@context.Id</p>
+                                    </div>
+                                    <div class="listContentItem" style="width:5%">
                                         <b>模型描述</b>
                                         <p title="@context.ModelDescription">@context.ModelDescription</p>
                                     </div>
@@ -53,10 +57,6 @@
                                             else if (context.AIType == AIType.AzureOpenAI)
                                             {
                                                 <Tag Color="@PresetColor.Red.ToString()">AzureOpenAI</Tag>
-                                            }
-                                            else if (context.AIType == AIType.LLamaSharp)
-                                            {
-                                                <Tag Color="@PresetColor.Yellow.ToString()">LLamaSharp</Tag>
                                             }
                                             else if (context.AIType == AIType.SparkDesk)
                                             {
@@ -78,12 +78,8 @@
                                             {
                                                 <Tag Color="@PresetColor.GeekBlue.ToString()">BgeRerank</Tag>
                                             }
-                                            else if (context.AIType == AIType.StableDiffusion)
-                                            {
-                                                <Tag Color="@PresetColor.Magenta.ToString()">StableDiffusion</Tag>
-                                            }
-                                            else if (context.AIType == AIType.Ollama)
-                                            {
+                                            else if (context.AIType == AIType.Ollama || context.AIType == AIType.OllamaEmbedding)
+                                                            {
                                                 <Tag Color="@PresetColor.Pink.ToString()">Ollama</Tag>
                                             }
                                         </p>
@@ -101,21 +97,17 @@
                                             {
                                                 <Tag Color="@PresetColor.Green.ToString()">向量模型</Tag>
                                             }
-                                            else if (context.AIModelType == AIModelType.Image)
-                                            {
-                                                <Tag Color="@PresetColor.Lime.ToString()">图片模型</Tag>
-                                            }
                                             else if (context.AIModelType == AIModelType.Rerank)
                                             {
                                                 <Tag Color="@PresetColor.GeekBlue.ToString()">Rerank重排模型</Tag>
                                             }
                                         </p>
                                     </div>
-                                    <div class="listContentItem" style="width:25%">
+                                    <div class="listContentItem" style="width:20%">
                                         <b>模型地址</b>
                                         <p title="@context.EndPoint">@context.EndPoint</p>
                                     </div>
-                                    <div class="listContentItem" style="width:15%">
+                                    <div class="listContentItem" style="width:10%">
                                         <b>模型名称</b>
                                         <p title="@context.ModelName">@context.ModelName</p>
                                     </div>

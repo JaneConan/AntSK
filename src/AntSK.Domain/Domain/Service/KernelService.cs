@@ -4,25 +4,15 @@ using AntSK.Domain.Domain.Interface;
 using AntSK.Domain.Domain.Other;
 using AntSK.Domain.Repositories;
 using AntSK.Domain.Utils;
-using LLama;
-using LLamaSharp.SemanticKernel.TextCompletion;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Plugins.Core;
 using Microsoft.SemanticKernel.TextGeneration;
 using RestSharp;
-using System;
 using ServiceLifetime = AntSK.Domain.Common.DependencyInjection.ServiceLifetime;
 using AntSK.LLM.Mock;
 using AntSK.Domain.Domain.Model.Enum;
-using AntSK.LLM.LLamaFactory;
-using System.Reflection;
-using DocumentFormat.OpenXml.Drawing;
-using Microsoft.KernelMemory;
-using OpenCvSharp.ML;
-using LLamaSharp.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Amazon.Runtime.Internal.Util;
 using Microsoft.Extensions.Logging;
 
 namespace AntSK.Domain.Domain.Service
@@ -108,13 +98,6 @@ namespace AntSK.Domain.Domain.Service
                         );
                     break;
 
-                case Model.Enum.AIType.LLamaSharp:
-                    var (weights, parameters) = LLamaConfig.GetLLamaConfig(chatModel.ModelName);
-                    var ex = new StatelessExecutor(weights, parameters);
-                    builder.Services.AddKeyedSingleton<ITextGenerationService>("local-llama", new LLamaSharpTextCompletion(ex));
-                    builder.Services.AddKeyedSingleton<IChatCompletionService>("local-llama-chat", new LLamaSharpChatCompletion(ex));
-                    break;
-
                 case Model.Enum.AIType.SparkDesk:
 
                     var settings = chatModel.ModelKey.Split("|");
@@ -176,7 +159,7 @@ namespace AntSK.Domain.Domain.Service
         public void ImportFunctionsByApp(Apps app, Kernel _kernel)
         {
             //插件不能重复注册，否则会异常
-            if (_kernel.Plugins.Any(p => p.Name == "AntSkFunctions"))
+            if (_kernel.Plugins.Any(p => p.Name == "AntSKFunctions"))
             {
                 return;
             }
@@ -187,7 +170,7 @@ namespace AntSK.Domain.Domain.Service
             //本地函数插件
             ImportNativeFunction(app, functions);
 
-            _kernel.ImportPluginFromFunctions("AntSkFunctions", functions);
+            _kernel.ImportPluginFromFunctions("AntSKFunctions", functions);
         }
 
         /// <summary>
