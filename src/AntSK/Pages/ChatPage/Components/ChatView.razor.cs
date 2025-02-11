@@ -105,6 +105,10 @@ namespace AntSK.Pages.ChatPage.Components
             {
                 MessageList = msgs;
             }
+            else
+            {
+                MessageList = new List<Chats>();
+            }
         }
 
         /// <summary>
