@@ -1,9 +1,9 @@
 {
-  "name": "许泽宇",
-  "avatar": "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png",
+  "name": "",
+  "avatar": "",
   "userid": "00000001",
-  "email": "286513187@qq.com",
-  "signature": "大家好，我是许泽宇，欢迎你与我进行交流",
+  "email": "@qq.com",
+  "signature": "大家好，我是XXX，欢迎你与我进行交流",
   "title": "公众号【中国天辰信息部】",
   "group": "希望通过这个项目给大家分享AIGC相关知识",
   "tags": [
@@ -37,14 +37,14 @@
   "country": "China",
   "geographic": {
     "province": {
-      "label": "湖北省",
-      "key": "430000"
+      "label": "",
+      "key": ""
     },
     "city": {
-      "label": "武汉市",
-      "key": "430001"
+      "label": "",
+      "key": ""
     }
   },
-  "address":"目前居住在湖北武汉",
+  "address":"",
   "phone": ""
 }

@@ -7,6 +7,7 @@ llama3:70b
 yi:6b
 yi:9B
 yi:34B
+qwen2.5:72b-instruct
 qwen2:0.5b
 qwen2:1.5b
 qwen2:7b

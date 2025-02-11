@@ -12,7 +12,7 @@
     <GridCol Span="14">
         <Card Style="height:75vh;overflow: auto;">
             <TitleTemplate>
-                <Icon Type="setting" /> 选择应用
+                <Icon Type="setting" /> 选择智能体
                 <Select DataSource="@_list"
                         @bind-Value="@AppId"
                         DefaultValue="@("lucy")"
@@ -25,7 +25,7 @@
             <Body>
                 @if (!string.IsNullOrEmpty(AppId))
                 {
-                    <Watermark Content="AntSK">
+                    <Watermark Content="天辰问数">
                         <ChatView AppId="@AppId" ShowTitle=false OnRelevantSources="OnRelevantSources"></ChatView>
                     </Watermark>
                 }

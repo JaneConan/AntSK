@@ -9,14 +9,14 @@
 
 @inherits AuthComponentBase
 
-<PageContainer Title="新增应用">
+<PageContainer Title="新增智能体">
     <ChildContent>
         <Card>
             <Form Model="@_appModel"
                   Style="margin-top: 8px;"
                   OnFinish="HandleSubmit">
-                <FormItem Label="应用名称" LabelCol="LayoutModel._formItemLayout.LabelCol" WrapperCol="LayoutModel._formItemLayout.WrapperCol">
-                    <Input Placeholder="请输入应用名称" @bind-Value="@context.Name" />
+                <FormItem Label="智能体名称" LabelCol="LayoutModel._formItemLayout.LabelCol" WrapperCol="LayoutModel._formItemLayout.WrapperCol">
+                    <Input Placeholder="请输入智能体名称" @bind-Value="@context.Name" />
                 </FormItem>
        @*          <FormItem Label="图标" LabelCol="LayoutModel._formItemLayout.LabelCol" WrapperCol="LayoutModel._formItemLayout.WrapperCol">
                    <Input Placeholder="请输入图标" @bind-Value="@context.Icon" />
@@ -25,9 +25,9 @@
                 </FormItem> *@
                 <FormItem Label="类型" LabelCol="LayoutModel._formItemLayout.LabelCol" WrapperCol="LayoutModel._formItemLayout.WrapperCol">
                     <RadioGroup @bind-Value="context.Type" OnChange="OnAppTypeChange" TValue="string" ButtonStyle="RadioButtonStyle.Solid">
-                        <Radio RadioButton Value="@AppType.chat.ToString()">会话应用</Radio>
+                        <Radio RadioButton Value="@AppType.chat.ToString()">会话智能体</Radio>
                         <Radio RadioButton Value="@AppType.kms.ToString()">知识库</Radio>
-                        <Radio RadioButton Value="@AppType.img.ToString()">做图应用</Radio>
+                        <Radio RadioButton Value="@AppType.img.ToString()">做图智能体</Radio>
                     </RadioGroup>
                 </FormItem>
                 <FormItem Label="描述" LabelCol="LayoutModel._formItemLayout.LabelCol" WrapperCol="LayoutModel._formItemLayout.WrapperCol">

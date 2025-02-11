@@ -64,7 +64,7 @@ namespace AntSK.Pages.AppPage
 
         private async Task Delete(string id)
         {
-            var content = "是否确认删除此应用";
+            var content = "是否确认删除此智能体";
             var title = "删除";
             var result = await _confirmService.Show(content, title, ConfirmButtons.YesNo);
             if (result == ConfirmResult.Yes)

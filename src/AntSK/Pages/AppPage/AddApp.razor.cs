@@ -86,7 +86,7 @@ namespace AntSK.Pages.AppPage
                 bool allSameEmbeddingModelID = kmsList.Select(k => k.EmbeddingModelID).Distinct().Count() == 1;
                 if (!allSameEmbeddingModelID)
                 {
-                    _ = Message.Error("同一个应用的知识库的Embedding模型必须相同！", 2);
+                    _ = Message.Error("同一个智能体的知识库的Embedding模型必须相同！", 2);
                     return;
                 }
                 _appModel.KmsIdList = string.Join(",", kmsIds);

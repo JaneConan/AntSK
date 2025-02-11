@@ -41,7 +41,7 @@ namespace AntSK.Domain.Common.DependencyInjection
                 // 创建数据库（如果不存在）
                 _repository.GetDB().DbMaintenance.CreateDatabase();
 
-                // 获取当前应用程序域中所有程序集
+                // 获取当前智能体程序域中所有程序集
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
                 // 在所有程序集中查找具有[SugarTable]特性的类

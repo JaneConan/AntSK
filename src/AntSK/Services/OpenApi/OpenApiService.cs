@@ -108,7 +108,7 @@ namespace AntSK.Services.OpenApi
                 await HttpContext.Response.WriteAsync(message, Encoding.UTF8);
                 await HttpContext.Response.Body.FlushAsync();
                 //模拟延迟。
-                await Task.Delay(TimeSpan.FromMilliseconds(50));
+                await Task.Delay(50);
             }
 
             await HttpContext.Response.WriteAsync("data: [DONE]");
@@ -179,7 +179,7 @@ namespace AntSK.Services.OpenApi
                 await HttpContext.Response.WriteAsync(message, Encoding.UTF8);
                 await HttpContext.Response.Body.FlushAsync();
                 //模拟延迟。
-                await Task.Delay(TimeSpan.FromMilliseconds(50));
+                await Task.Delay(50);
             }
 
             await HttpContext.Response.WriteAsync("data: [DONE]");

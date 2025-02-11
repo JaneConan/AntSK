@@ -8,13 +8,13 @@
     <Row Type="flex" Gutter="24">
         <AntDesign.Col Xs="24" Sm="12" Md="12" Lg="12" Xl="6" Style="margin-bottom: 24px;">
             <div @onclick="NavToApp" style=" cursor: pointer;">
-                <ChartCard Title="应用数量"
+                <ChartCard Title="智能体数量"
                            Total="@appCount"
                            Icon="wechat"
                            ContentHeight="46">
                     <ChildContent>
-                        <Tag Color="@PresetColor.Yellow.ToString()">会话应用：@chatAppCount</Tag>
-                            <Tag Color="@PresetColor.Green.ToString()">知识库应用：@kmsAppCount</Tag>
+                        <Tag Color="@PresetColor.Yellow.ToString()">会话智能体：@chatAppCount</Tag>
+                            <Tag Color="@PresetColor.Green.ToString()">知识库智能体：@kmsAppCount</Tag>
                         </ChildContent>
                         <Footer>
                         </Footer>
@@ -69,20 +69,6 @@
         </Row>
         <Divider><Title Level="3">功能特性</Title></Divider>
         <Space Size=@(("10", "10" )) Wrap Align="start" Style="padding:10px">
-        <SpaceItem>
-            <Card Bordered="true" Title=@("👉🏻商业版") Hoverable="true" Style="height:260px;width:300px">
-                <Body>
-                    <Text>● AntSKPro为商业版 <a href="https://antsk.cn" target="_blank">访问官网</a></Text>
-                    <br>
-                    <Text>● 开源版本请参见：</Text>
-                    <a href="https://github.com/AIDotNet/AntSK" target="_blank">AntSK开源版</a>
-                    <br>
-                    <Text>● 如需商业版授权，请联系微信：</Text>
-                    <b style="color:#1890ff">xuzeyu91</b>
-                    <br>
-                </Body>
-            </Card>
-        </SpaceItem>
          <SpaceItem>
              <Card Bordered="true" Title=@("🍬语义内核") Hoverable="true" Style="height:260px;width:300px">
                  <Body>
@@ -120,9 +106,9 @@
          <SpaceItem>
              <Card Bordered="true" Title=@("🎁插件生态") Hoverable="true" Style="height:260px;width:300px">
                  <Body>
-                    <Text>1、开放式API插件系统，允许第三方开发者或服务商轻松将其接口集成到<strong>天辰智慧问答平台</strong>，不断增强应用功能</Text>
+                    <Text>1、开放式API插件系统，允许第三方开发者或服务商轻松将其接口集成到<strong>天辰智慧问答平台</strong>，不断增强智能体功能</Text>
                      <br>
-                    <Text>2、开放式函数插件系统，标准格式的函数代码以及dll后集成到<strong>天辰智慧问答平台</strong>，不断增强应用功能</Text>
+                    <Text>2、开放式函数插件系统，标准格式的函数代码以及dll后集成到<strong>天辰智慧问答平台</strong>，不断增强智能体功能</Text>
                      <br>
                      <Text>3、支持二次开发Function</Text>
                      <br>

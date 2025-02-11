@@ -729,7 +729,7 @@ LOCALES = {
         },
         "zh": {
             "label": "LoRA 作用模块（非必填）",
-            "info": "应用 LoRA 的模块名称。使用英文逗号分隔多个名称。",
+            "info": "智能体 LoRA 的模块名称。使用英文逗号分隔多个名称。",
         },
     },
     "additional_target": {
@@ -925,7 +925,7 @@ LOCALES = {
         },
         "zh": {
             "label": "GaLore 作用模块",
-            "info": "应用 GaLore 的模块名称。使用英文逗号分隔多个名称。",
+            "info": "智能体 GaLore 的模块名称。使用英文逗号分隔多个名称。",
         },
     },
     "badam_tab": {

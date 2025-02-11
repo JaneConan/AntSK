@@ -1,17 +1,40 @@
 ﻿@namespace AntSK.Pages.ChatPage
+@using AntSK.Domain.Domain.Model.Dto
 @using AntSK.Domain.Repositories
 @using AntSK.Models
+@using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using AntSK.Pages.ChatPage.Components
 @page "/OpenChat/{AppId}"
 @layout OpenLayout
 
+<Card Style="height:100%;overflow: auto;">
+    <TitleTemplate>
+        <Icon Type="bulb" /> 请选择智能体
+        <Select DataSource="@_list"
+                @bind-Value="@AppId"
+                DefaultValue="@("lucy")"
+                ValueProperty="c=>c.Id"
+                LabelProperty="c=>c.Name"
+                Style="width:150px">
+        </Select>
+    </TitleTemplate>
+    <ChildContent>
+        <div style="text-align:center !important">
+            <span>技术支持 数智中心</span>
+        </div>
+    </ChildContent>
+    <Body>
+        <Watermark Content="天辰问数" style="height: 100%;">
+            <ChatView AppId="@AppId" ShowTitle=true>
 
-<ChatView AppId="@AppId" ShowTitle=true>
-
-</ChatView>
-
-
+            </ChatView>
+        </Watermark>
+    </Body>
+    <Extra>
+        <span style="text-align:center">内容均由AI生成，仅供参考!</span>
+    </Extra>
+</Card>
 <style>
     #chat {
         height: 100%;
@@ -22,8 +45,22 @@
         margin: 0;
         padding: 10px;
     }
+
+    .ant-card-body {
+        padding: 0px 24px 24px 24px
+    }
 </style>
 @code {
     [Parameter]
     public string AppId { get; set; }
+
+    protected List<Apps> _list = new List<Apps>();
+
+    [Inject] protected IApps_Repositories _apps_Repositories { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _list = _apps_Repositories.GetList();
+    }
 }

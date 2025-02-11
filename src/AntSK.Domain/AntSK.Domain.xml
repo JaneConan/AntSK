@@ -451,7 +451,7 @@
         </member>
         <member name="P:AntSK.Domain.Repositories.Chats.AppId">
             <summary>
-            应用ID
+            智能体ID
             </summary>
         </member>
         <member name="P:AntSK.Domain.Repositories.Chats.Context">

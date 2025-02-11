@@ -248,7 +248,7 @@ namespace AntSK.Pages.ChatPage.Components
                 {
                     history = new ChatHistory(app.Prompt.ConvertToString());
                 }
-                //聊天应用增加系统角色
+                //聊天智能体增加系统角色
                 if (MessageList.Count > 0)
                 {
                     history = await _chatService.GetChatHistory(MessageList, history);
@@ -330,7 +330,7 @@ namespace AntSK.Pages.ChatPage.Components
             {
                 rawContent.Append(content.ConvertToString());
                 info.Context = Markdown.ToHtml(rawContent.ToString().Replace("<think>", "<div class=\"think\">").Replace("</think>", "</div>"));
-                await Task.Delay(30);
+                await Task.Delay(10);
                 await InvokeAsync(StateHasChanged);
             }
             //全部处理完后再处理一次Markdown 处理代码高亮

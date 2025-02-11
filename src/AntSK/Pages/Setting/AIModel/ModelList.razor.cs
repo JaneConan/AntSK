@@ -68,7 +68,7 @@ namespace AntSK.Pages.Setting.AIModel
             {
                 if (_apps_Repositories.IsAny(p => p.ChatModelID == modelid || p.EmbeddingModelID == modelid))
                 {
-                    _ = Message.Error("该模型有应用在使用，请先删除应用后才允许删除该模型");
+                    _ = Message.Error("该模型有智能体在使用，请先删除智能体后才允许删除该模型");
                     return;
                 }
                 if (_kmss_Repositories.IsAny(p => p.ChatModelID == modelid || p.EmbeddingModelID == modelid))

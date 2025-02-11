@@ -6,7 +6,7 @@
 @using AntSK.Services.Auth
 @inherits AuthComponentBase
 
-<PageContainer Title="应用列表">
+<PageContainer Title="智能体列表">
     <Content>
         <div style="text-align: center;">
             <Search Placeholder="输入回车"
@@ -26,7 +26,7 @@
                     @if (string.IsNullOrEmpty(context.Id))
                     {
                         <Button Type="dashed" class="newButton" @onclick="NavigateToAddApp">
-                            <Icon Type="plus" Theme="outline" /> 创建应用
+                            <Icon Type="plus" Theme="outline" /> 创建智能体
                         </Button>
                     }
                     else
@@ -52,7 +52,7 @@
                                     </Paragraph>
                                     @if (context.Type == AppType.chat.ToString())
                                     {
-                                        <Tag Color="@PresetColor.Yellow.ToString()">会话应用</Tag>
+                                        <Tag Color="@PresetColor.Yellow.ToString()">会话智能体</Tag>
                                     }
                                     else if (context.Type == AppType.kms.ToString())
                                     {
@@ -61,7 +61,7 @@
                                     }
                                     else if (context.Type == AppType.img.ToString())
                                     {
-                                        <Tag Color="@PresetColor.Red.ToString()">做图应用</Tag>
+                                        <Tag Color="@PresetColor.Red.ToString()">做图智能体</Tag>
                                     }
                                 </DescriptionTemplate>
                             </CardMeta>

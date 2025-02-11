@@ -15,7 +15,7 @@ namespace AntSK.Domain.Repositories
         /// </summary>
         public string UserName { get; set; }
         /// <summary>
-        /// 应用ID
+        /// 智能体ID
         /// </summary>
         public string AppId { get; set; }
         /// <summary>

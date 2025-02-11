@@ -276,7 +276,7 @@ namespace AntSK.Domain.Domain.Service
         /// <param name="functions"></param>
         private void ImportNativeFunction(Apps app, List<KernelFunction> functions)
         {
-            if (!string.IsNullOrWhiteSpace(app.NativeFunctionList))//需要添加判断应用是否开启了本地函数插件
+            if (!string.IsNullOrWhiteSpace(app.NativeFunctionList))//需要添加判断智能体是否开启了本地函数插件
             {
                 var nativeIdList = app.NativeFunctionList.Split(",");
 
