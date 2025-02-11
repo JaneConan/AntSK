@@ -37,7 +37,7 @@ async function embedChatbot() {
 	MessageIconImg.style.cssText = 'width: 100%; height: 100%;'
 	const ChatBtn = document.createElement('div')
 	ChatBtn.id = chatBtnId
-	ChatBtn.style.cssText = 'position: fixed; bottom: 1rem; right: 1rem; width: 40px; height: 40px; cursor: pointer; z-index: 2147483647; transition: 0;'
+	ChatBtn.style.cssText = 'position: fixed; bottom: 1rem; right: 1rem; width: 200px; height: 200px; cursor: pointer; z-index: 2147483647; transition: 0;'
 
 	const ChatBtnDiv = document.createElement('div')
 	if (MessageIconUrl) {
@@ -132,11 +132,14 @@ async function embedChatbot() {
 		const visibilityVal = chatWindow.style.visibility
 		if (visibilityVal === 'hidden') {
 			chatWindow.style.visibility = 'unset'
+			ChatBtn.style.cssText = 'position: fixed; bottom: 1rem; right: 1rem; width: 40px; height: 40px; cursor: pointer; z-index: 2147483647; transition: 0;'
 			ChatBtnDiv.innerHTML = CloseIcon
+
 		} else {
 			chatWindow.style.visibility = 'hidden'
 			if (MessageIconUrl) {
 				ChatBtnDiv.innerHTML = ''
+				ChatBtn.style.cssText = 'position: fixed; bottom: 1rem; right: 1rem; width: 200px; height: 200px; cursor: pointer; z-index: 2147483647; transition: 0;'
 				ChatBtnDiv.appendChild(MessageIconImg)
 			} else {
 				ChatBtnDiv.innerHTML = MessageIcon

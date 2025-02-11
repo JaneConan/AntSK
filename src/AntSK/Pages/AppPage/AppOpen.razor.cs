@@ -63,7 +63,7 @@ namespace AntSK.Pages.AppPage
 
         private void GetScript()
         {
-            _script = $"<script src=\"{NavigationManager.BaseUri}js/iframe.js\" data-width=\"40rem\" data-height=\"80vh\" id=\"antsk-iframe\" data-src=\"{NavigationManager.BaseUri}openchat/{AppId}\" data-color=\"#4e83fd\" data-message-icon-url=\"{NavigationManager.BaseUri}assets/ai.png\"></script>";
+            _script = $"<script src=\"{NavigationManager.BaseUri}js/iframe.js\" data-width=\"40rem\" data-height=\"80vh\" id=\"antsk-iframe\" data-src=\"{NavigationManager.BaseUri}openchat/{AppId}\" data-color=\"#4e83fd\" data-message-icon-url=\"{NavigationManager.BaseUri}assets/ai.gif\"></script>";
         }
 
         private void HandleSubmit()
