@@ -55,9 +55,10 @@
 
                     @if (_relevantSources.Count() > 0 && app.Type != AppType.img.ToString())
                     {
-                        <AntList Bordered DataSource="@_relevantSources.ToList().Distinct()" Style="padding:10px;margin-left:70px">
+                        <AntList Bordered DataSource="@_relevantSources.ToList().Distinct()" Style="padding:10px;margin-left:35px">
+                            <Header><strong>参考内容</strong></Header>
                             <ChildContent Context="relevant">
-                                <span> <b>@relevant.SourceName </b>  </span>
+                                <span>@(_relevantSources.IndexOf(relevant) + 1). </span><a style="cursor:pointer" onclick="@(async () => await OnShowRelevantAsync(relevant.SourceName, relevant.Text))"><b> @relevant.SourceName </b></a>
                                 <br />
                                 <span>相似度：<Text Mark> @relevant.Relevance</Text></span>
                                 <br />
@@ -82,7 +83,7 @@
     }
     <Flex Justify="end">
         <AntDesign.Input @bind-Value="@(_messageInput)" DebounceMilliseconds="@(-1)" Placeholder="输入消息回车发送" OnPressEnter="@(async () => await OnSendAsync())" Disabled="@Sendding"></AntDesign.Input>
-        @if (app.EmbeddingModelID != null)
+        @* @if (app.EmbeddingModelID != null)
         {
             <Upload Action="@("api/File/UploadFile")"
                     Name="file"
@@ -92,7 +93,7 @@
                     OnSingleCompleted="OnSingleCompleted">
                 <Button Icon="@IconType.Outline.Upload" Type="@(ButtonType.Link)" Disabled="@Sendding" />
             </Upload>
-        }
+        } *@
         <Button Icon="clear" Type="@(ButtonType.Link)" OnClick="@(async () => await OnClearAsync())" Disabled="@Sendding"></Button>
         <Button Icon="send" Type="@(ButtonType.Link)" OnClick="@(async () => await OnSendAsync())" Disabled="@Sendding"></Button>
     </Flex>

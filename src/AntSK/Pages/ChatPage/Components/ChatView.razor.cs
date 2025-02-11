@@ -64,7 +64,7 @@ namespace AntSK.Pages.ChatPage.Components
         {
             await base.OnInitializedAsync();
             await LoadData();
-          
+
         }
 
         protected override async Task OnParametersSetAsync()
@@ -95,12 +95,13 @@ namespace AntSK.Pages.ChatPage.Components
             if (string.IsNullOrEmpty(_userName))
             {
                 //匿名访问使用localstore
-                 msgs = await _localStorage.GetItemAsync<List<Chats>>($"msgs:{AppId}");
+                msgs = await _localStorage.GetItemAsync<List<Chats>>($"msgs:{AppId}");
             }
-            else 
+            else
             {
                 msgs = await _chats_Repositories.GetListAsync(p => p.AppId == AppId && p.UserName == _userName);
             }
+
             if (msgs != null && msgs.Count > 0)
             {
                 MessageList = msgs;
@@ -109,23 +110,27 @@ namespace AntSK.Pages.ChatPage.Components
             {
                 MessageList = new List<Chats>();
             }
+            if (_relevantSources != null && _relevantSources.Count > 0)
+            {
+                _relevantSources = _relevantSources.Where(s => s.AppId == AppId).ToList();
+            }
         }
 
         /// <summary>
         /// 清空聊天记录列表
         /// </summary>
         /// <returns></returns>
-        private async Task ClearMsgList() 
+        private async Task ClearMsgList()
         {
             MessageList.Clear();
             if (string.IsNullOrEmpty(_userName))
             {
                 await _localStorage.SetItemAsync<List<Chats>>($"msgs:{AppId}", MessageList);
             }
-            else 
+            else
             {
                 await _chats_Repositories.DeleteAsync(p => p.AppId == AppId && p.UserName == _userName);
-            }        
+            }
         }
         /// <summary>
         /// 保存聊天记录
@@ -137,13 +142,25 @@ namespace AntSK.Pages.ChatPage.Components
             {
                 await _localStorage.SetItemAsync<List<Chats>>($"msgs:{AppId}", MessageList);
             }
-            else 
+            else
             {
                 if (MessageList.Count() > 0)
                 {
                     await _chats_Repositories.InsertAsync(MessageList.LastOrDefault());
                 }
-            }          
+            }
+        }
+
+        protected async Task OnShowRelevantAsync(string title, string msg)
+        {
+            if (!string.IsNullOrEmpty(msg))
+            {
+                var result = await _confirmService.Show(msg, $"参考 {title} 的内容", ConfirmButtons.OK);
+                if (result == ConfirmResult.OK)
+                {
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
         }
 
         protected async Task OnClearAsync()
@@ -198,7 +215,8 @@ namespace AntSK.Pages.ChatPage.Components
                 Task.Run(async () =>
                 {
                     await SendAsync(_messageInput, filePath);
-                }).ContinueWith(task => {
+                }).ContinueWith(task =>
+                {
 
                     _messageInput = "";
                     Sendding = false;
@@ -291,19 +309,19 @@ namespace AntSK.Pages.ChatPage.Components
         /// <param name="questions"></param>
         /// <param name="app"></param>
         /// <returns></returns>
-        private async Task SendImg(string questions,Apps app)
+        private async Task SendImg(string questions, Apps app)
         {
             Chats info = new Chats();
             info.Id = Guid.NewGuid().ToString();
-            info.UserName=_userName;
-            info.AppId=AppId;
+            info.UserName = _userName;
+            info.AppId = AppId;
             info.CreateTime = DateTime.Now;
-            var base64= await _chatService.SendImgByAppAsync(app, questions);
+            var base64 = await _chatService.SendImgByAppAsync(app, questions);
             if (string.IsNullOrEmpty(base64))
             {
                 info.Context = "生成失败";
             }
-            else 
+            else
             {
                 info.Context = $"<img src=\"data:image/jpeg;base64,{base64}\" alt=\"Base64 Image\" />";
             }
@@ -325,7 +343,7 @@ namespace AntSK.Pages.ChatPage.Components
                 AppId = AppId,
                 UserName = _userName,
                 CreateTime = DateTime.Now,
-                Context=""
+                Context = ""
             };
             MessageList.Add(info);
             var chatResult = _chatService.SendKmsByAppAsync(app, questions, history, filePath, _relevantSources);

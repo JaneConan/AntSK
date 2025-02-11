@@ -122,6 +122,7 @@ namespace AntSK.Domain.Domain.Service
                     var searchResult = await memory.SearchAsync(questions, index: KmsConstantcs.FileIndex, filters: filters);
                     relevantSourceList.AddRange(searchResult.Results.SelectMany(item => item.Partitions.Select(part => new RelevantSource()
                     {
+                        AppId = app.Id,
                         SourceName = item.SourceName,
                         Text = Markdown.ToHtml(part.Text),
                         Relevance = part.Relevance
