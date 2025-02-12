@@ -39,6 +39,17 @@
                         <Image Width="25px" Height="25px" Style="margin-top:10px;" Src="assets/userlogo.png" />
                     </GridCol>
                 </GridRow>
+
+               @*  <GridRow Class="thinking">
+                    <GridCol Span="1">
+                        <Image Width="25px" Height="25px" Style="margin-top:10px;" Src="assets/tcc.png" />
+                    </GridCol>
+                    <GridCol Span="23">
+                        <div class="chat-bubble received">
+                            <Spin />正在思考...🤔
+                        </div>
+                    </GridCol>
+                </GridRow> *@
             }
             else
             {
@@ -50,10 +61,9 @@
                         <div class="chat-bubble received">
                             @((MarkupString)(item.Context))
                         </div>
-
                     </GridCol>
 
-                    @if (_relevantSources.Count() > 0 && app.Type != AppType.img.ToString())
+                    @if (_relevantSources.Count(s => s.ChatId == item.Id) > 0 && app.Type != AppType.img.ToString())
                     {
                         <AntList Bordered DataSource="@_relevantSources.ToList().Distinct()" Style="padding:10px;margin-left:35px">
                             <Header><strong>参考内容</strong></Header>
@@ -93,9 +103,14 @@
                     OnSingleCompleted="OnSingleCompleted">
                 <Button Icon="@IconType.Outline.Upload" Type="@(ButtonType.Link)" Disabled="@Sendding" />
             </Upload>
-        } *@
-        <Button Icon="clear" Type="@(ButtonType.Link)" OnClick="@(async () => await OnClearAsync())" Disabled="@Sendding"></Button>
-        <Button Icon="send" Type="@(ButtonType.Link)" OnClick="@(async () => await OnSendAsync())" Disabled="@Sendding"></Button>
+        } *@ 
+        <Tooltip Title="@IconType.Outline.Clear">
+            <Button Icon="clear" Type="@(ButtonType.Link)" OnClick="@(async () => await OnClearAsync())" Disabled="@Sendding"></Button>
+        </Tooltip>
+        <Tooltip Title="@IconType.Outline.Send">
+            <Button Icon="send" Type="@(ButtonType.Link)" OnClick="@(async () => await OnSendAsync())" Disabled="@Sendding"></Button>
+        </Tooltip>
+
     </Flex>
 </div>
 
@@ -150,7 +165,6 @@
         font-style: italic;
     }
 </style>
-
 @code {
 
 }

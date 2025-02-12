@@ -87,7 +87,7 @@ namespace AntSK.Domain.Domain.Service
             }
         }
 
-        public async IAsyncEnumerable<StreamingKernelContent> SendKmsByAppAsync(Apps app, string questions, ChatHistory history, string filePath, List<RelevantSource> relevantSources = null)
+        public async IAsyncEnumerable<StreamingKernelContent> SendKmsByAppAsync(Apps app, string questions, ChatHistory history, string filePath, List<RelevantSource> relevantSources = null, string kmsId = null)
         {
             relevantSources?.Clear();
             var relevantSourceList = await _kMService.GetRelevantSourceList(app, questions);
@@ -193,6 +193,7 @@ namespace AntSK.Domain.Domain.Service
                             item.SourceName = fileName;
                         }       
                     }
+                    item.ChatId = kmsId;
                     item.Text = Markdown.ToHtml(item.Text);
                 }
 

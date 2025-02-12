@@ -5,6 +5,7 @@ namespace AntSK.Domain.Domain.Model.Dto
     {
         public string SourceName { get; set; }
         public string AppId { get; set; }
+        public string ChatId { get; set; }
 
         public string Text { get; set; }
         public float Relevance { get; set; }

@@ -84,6 +84,7 @@ namespace AntSK.Pages.ChatPage.Components
             _userName = userSession?.UserName;
             await GetMsgList();
             await MarkDown();
+            await _JSRuntime.ScrollToBottomAsync("toggleThinkingElement");
         }
         /// <summary>
         /// 获取聊天记录列表
@@ -259,10 +260,10 @@ namespace AntSK.Pages.ChatPage.Components
         /// <returns></returns>
         protected async Task<bool> SendAsync(string questions, string? filePath)
         {
-
             //处理多轮会话
             Apps app = _apps_Repositories.GetFirst(p => p.Id == AppId);
             ChatHistory history = new ChatHistory();
+            string kmsid = "";
 
             if (app.Type == AppType.chat.ToString() && (filePath == null || app.EmbeddingModelID.IsNull()))
             {
@@ -343,10 +344,14 @@ namespace AntSK.Pages.ChatPage.Components
                 AppId = AppId,
                 UserName = _userName,
                 CreateTime = DateTime.Now,
-                Context = ""
+                Context = Markdown.ToHtml("<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" style=\"margin-top:10px\"><circle cx=\"10\" cy=\"10\" r=\"6\" fill=\"none\" stroke=\"#3498db\" stroke-width=\"2\" stroke-dasharray=\"25 12\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 10 10\" to=\"360 10 10\" dur=\"0.8s\" repeatCount=\"indefinite\"/></circle></svg><span>正在思考...🤔</span>")
             };
             MessageList.Add(info);
-            var chatResult = _chatService.SendKmsByAppAsync(app, questions, history, filePath, _relevantSources);
+
+            await InvokeAsync(StateHasChanged);
+
+            var chatResult = _chatService.SendKmsByAppAsync(app, questions, history, filePath, _relevantSources, info.Id);
+            
             StringBuilder rawContent = new StringBuilder();
             await foreach (var content in chatResult)
             {
@@ -399,7 +404,6 @@ namespace AntSK.Pages.ChatPage.Components
         /// <summary>
         /// 处理markdown
         /// </summary>
-        /// <param name="info"></param>
         /// <returns></returns>
         private async Task MarkDown()
         {
