@@ -40,7 +40,7 @@
                     </GridCol>
                 </GridRow>
 
-               @*  <GridRow Class="thinking">
+                @*  <GridRow Class="thinking">
                     <GridCol Span="1">
                         <Image Width="25px" Height="25px" Style="margin-top:10px;" Src="assets/tcc.png" />
                     </GridCol>
@@ -65,21 +65,25 @@
 
                     @if (_relevantSources.Count(s => s.ChatId == item.Id) > 0 && app.Type != AppType.img.ToString())
                     {
-                        <AntList Bordered DataSource="@_relevantSources.ToList().Distinct()" Style="padding:10px;margin-left:35px">
-                            <Header><strong>参考内容</strong></Header>
-                            <ChildContent Context="relevant">
-                                <span>@(_relevantSources.IndexOf(relevant) + 1). </span><a style="cursor:pointer" onclick="@(async () => await OnShowRelevantAsync(relevant.SourceName, relevant.Text))"><b> @relevant.SourceName </b></a>
-                                <br />
-                                <span>相似度：<Text Mark> @relevant.Relevance</Text></span>
-                                <br />
-                                @if (@relevant.RerankScore != 0)
-                                {
-                                    <br />
-                                    <span> Rerank相关性：<Text Mark> @relevant.RerankScore</Text></span>
-                                }
-                            </ChildContent>
-                        </AntList>
+                        <Collapse Style="padding:10px;margin-left:35px">
+                            <Panel Header="参考内容">
+                                <AntList Size="ListSize.Small" DataSource="@_relevantSources.ToList().Distinct()">
+                                    <ChildContent Context="relevant">
+                                        <span>@(_relevantSources.IndexOf(relevant) + 1). </span><a style="cursor:pointer" onclick="@(async () => await OnShowRelevantAsync(relevant.SourceName, relevant.Text))"><b> @relevant.SourceName </b></a>
+                                        <br />
+                                        <span>相似度：<Text Mark> @relevant.Relevance</Text></span>
+                                        <br />
+                                        @if (@relevant.RerankScore != 0)
+                                        {
+                                            <br />
+                                            <span> Rerank相关性：<Text Mark> @relevant.RerankScore</Text></span>
+                                        }
+                                    </ChildContent>
+                                </AntList>
+                            </Panel>
+                        </Collapse>
                     }
+
                 </GridRow>
             }
         </Virtualize>
