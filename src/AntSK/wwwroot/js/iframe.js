@@ -33,6 +33,7 @@ async function embedChatbot() {
 
 	const CloseIcon = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1690535441526" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6367" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M512 1024A512 512 0 1 1 512 0a512 512 0 0 1 0 1024zM305.956571 370.395429L447.488 512 305.956571 653.604571a45.568 45.568 0 1 0 64.438858 64.438858L512 576.512l141.604571 141.531429a45.568 45.568 0 0 0 64.438858-64.438858L576.512 512l141.531429-141.604571a45.568 45.568 0 1 0-64.438858-64.438858L512 447.488 370.395429 305.956571a45.568 45.568 0 0 0-64.438858 64.438858z" fill=${primaryColor} p-id="6368"></path></svg>`
 	const MessageIconImg = document.createElement('img')
+	MessageIconImg.addEventListener('dragstart', e => e.preventDefault()); // 解决图片被拖动时触发下载的问题
 	MessageIconImg.src = MessageIconUrl
 	MessageIconImg.style.cssText = 'width: 100%; height: 100%;'
 	const ChatBtn = document.createElement('div')
@@ -158,10 +159,10 @@ async function embedChatbot() {
 	ChatBtn.addEventListener('mousemove', (e) => {
 		if (!chatBtnDown) return
 		chatBtnDragged = true
-		const transformX = e.clientX - chatBtnMouseX
-		const transformY = e.clientY - chatBtnMouseY
+		//const transformX = e.clientX - chatBtnMouseX
+		//const transformY = e.clientY - chatBtnMouseY
 
-		ChatBtn.style.transform = `translate3d(${transformX}px, ${transformY}px, 0)`
+		//ChatBtn.style.transform = `translate3d(${transformX}px, ${transformY}px, 0)`
 
 		e.stopPropagation()
 	})

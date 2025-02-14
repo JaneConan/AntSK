@@ -1,3 +1,4 @@
+using AntDesign;
 using AntDesign.ProLayout;
 using AntSK.Domain.Common.DependencyInjection;
 using AntSK.Domain.Common.Map;
@@ -5,19 +6,14 @@ using AntSK.Domain.Domain.Model;
 using AntSK.Domain.Domain.Other;
 using AntSK.Domain.Domain.Service;
 using AntSK.Domain.Options;
-using AntSK.Domain.Repositories;
 using AntSK.Domain.Utils;
 using AntSK.plugins.Functions;
 using AntSK.Services.Auth;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
 using OpenTelemetry.Exporter;
 using Serilog;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
@@ -56,6 +52,8 @@ InitExtensions.InitLog(logger);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddAntDesign();
+// 设置默认语言
+LocaleProvider.DefaultLanguage = "zh-CN";
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();

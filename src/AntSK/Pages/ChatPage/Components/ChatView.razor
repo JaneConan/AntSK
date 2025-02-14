@@ -39,17 +39,6 @@
                         <Image Width="25px" Height="25px" Style="margin-top:10px;" Src="assets/userlogo.png" />
                     </GridCol>
                 </GridRow>
-
-                @*  <GridRow Class="thinking">
-                    <GridCol Span="1">
-                        <Image Width="25px" Height="25px" Style="margin-top:10px;" Src="assets/tcc.png" />
-                    </GridCol>
-                    <GridCol Span="23">
-                        <div class="chat-bubble received">
-                            <Spin />正在思考...🤔
-                        </div>
-                    </GridCol>
-                </GridRow> *@
             }
             else
             {
@@ -108,10 +97,10 @@
                 <Button Icon="@IconType.Outline.Upload" Type="@(ButtonType.Link)" Disabled="@Sendding" />
             </Upload>
         } *@ 
-        <Tooltip Title="@IconType.Outline.Clear">
+        <Tooltip Title="清空聊天记录">
             <Button Icon="clear" Type="@(ButtonType.Link)" OnClick="@(async () => await OnClearAsync())" Disabled="@Sendding"></Button>
         </Tooltip>
-        <Tooltip Title="@IconType.Outline.Send">
+        <Tooltip Title="发送">
             <Button Icon="send" Type="@(ButtonType.Link)" OnClick="@(async () => await OnSendAsync())" Disabled="@Sendding"></Button>
         </Tooltip>
 
