@@ -1,0 +1,6 @@
+@AnyShareHandling_HostAddress = http://localhost:5242
+
+GET {{AnyShareHandling_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
