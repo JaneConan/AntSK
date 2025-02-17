@@ -86,17 +86,19 @@
     }
     <Flex Justify="end">
         <AntDesign.Input @bind-Value="@(_messageInput)" DebounceMilliseconds="@(-1)" Placeholder="输入消息回车发送" OnPressEnter="@(async () => await OnSendAsync())" Disabled="@Sendding"></AntDesign.Input>
-        @* @if (app.EmbeddingModelID != null)
+        @if (app.EmbeddingModelID != null)
         {
-            <Upload Action="@("api/File/UploadFile")"
-                    Name="file"
-                    Accept="*/*"
-                    ShowUploadList="false"
-                    BeforeUpload="_kMService.BeforeUpload"
-                    OnSingleCompleted="OnSingleCompleted">
-                <Button Icon="@IconType.Outline.Upload" Type="@(ButtonType.Link)" Disabled="@Sendding" />
-            </Upload>
-        } *@ 
+            <Tooltip Title="上传附件">
+                <Upload Action="@("api/File/UploadFile")"
+                        Name="file"
+                        Accept="*/*"
+                        ShowUploadList="false"
+                        BeforeUpload="_kMService.BeforeUpload"
+                        OnSingleCompleted="OnSingleCompleted">
+                    <Button Icon="@IconType.Outline.Upload" Type="@(ButtonType.Link)" Disabled="@Sendding" />
+                </Upload>
+            </Tooltip>
+        }
         <Tooltip Title="清空聊天记录">
             <Button Icon="clear" Type="@(ButtonType.Link)" OnClick="@(async () => await OnClearAsync())" Disabled="@Sendding"></Button>
         </Tooltip>
