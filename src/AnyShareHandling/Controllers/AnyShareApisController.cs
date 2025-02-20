@@ -34,7 +34,7 @@ namespace AnyShareHandling.Controllers
             var content = new StringContent("{\r\n    \"client_id\": \"" + client_id + "\",\r\n    \"redirect_uri\": \"https://localhost/callback\",\r\n    \"response_type\": \"token id_token\",\r\n    \"scope\": \"offline openid all\",\r\n    \"udids\": [\r\n        \"\"\r\n    ],\r\n    \"credential\": {\r\n        \"id\": \"tianchen\",\r\n        \"params\": {\r\n            \"as_code\": \"" + as_code + "\"\r\n        }\r\n    }\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
             Console.WriteLine(responseBody);
 
@@ -49,7 +49,7 @@ namespace AnyShareHandling.Controllers
             var folderRequest = new HttpRequestMessage(HttpMethod.Get, $"https://anyshare.cntcc.cn/api/efast/v1/folders/{folders_id}/sub_objects?limit=1000");
             folderRequest.Headers.Add("Authorization", $"Bearer {accessToken}");
             var folderResponse = await folderClient.SendAsync(folderRequest);
-            //folderResponse.EnsureSuccessStatusCode();
+            folderResponse.EnsureSuccessStatusCode();
             string folderResponseBody = await folderResponse.Content.ReadAsStringAsync();
             Console.WriteLine(folderResponseBody);
 
