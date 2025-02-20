@@ -1,15 +1,10 @@
 ﻿using AntDesign;
-using AntSK.Domain.Domain.Interface;
 using AntSK.Domain.Domain.Model.Fun;
 using AntSK.Domain.Domain.Service;
 using AntSK.Domain.Repositories;
 using AntSK.Models;
-using AntSK.Pages.KmsPage;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using HtmlAgilityPack;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.SemanticKernel;
 
 namespace AntSK.Pages.FunPage
 {

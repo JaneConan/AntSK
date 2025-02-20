@@ -6,6 +6,7 @@ using AntSK.Domain.Repositories;
 using AntSK.Domain.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.SemanticKernel;
+using NPOI.SS.Formula.Functions;
 
 namespace AntSK.Pages.AppPage
 {
@@ -42,6 +43,7 @@ namespace AntSK.Pages.AppPage
         private List<Apis> _apiList = new List<Apis>();
 
         IEnumerable<string> funIds = [];
+        private bool isShow { get; set; }
 
         public Dictionary<string, string> _funList = new Dictionary<string, string>();
 
@@ -74,8 +76,8 @@ namespace AntSK.Pages.AppPage
                 kmsIds = _appModel.KmsIdList?.Split(",");
                 apiIds = _appModel.ApiFunctionList?.Split(",");
                 funIds = _appModel.NativeFunctionList?.Split(",");
+                isShow = _appModel.IsShow == 1;
             }
-
 
         }
         private void HandleSubmit()
@@ -108,7 +110,11 @@ namespace AntSK.Pages.AppPage
 
                 _appModel.NativeFunctionList = string.Join(",", funIds);
             }
- 
+            if (isShow)
+            {
+                _appModel.IsShow = 1;
+            }
+
             if (string.IsNullOrEmpty(AppId))
             {
                 //新增

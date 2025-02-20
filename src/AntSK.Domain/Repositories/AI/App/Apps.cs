@@ -75,7 +75,7 @@ namespace AntSK.Domain.Repositories
         /// <summary>
         /// 知识库ID列表
         /// </summary>
-        [SugarColumn(ColumnDataType = "varchar(1000)")]
+        [SugarColumn(ColumnDataType = "varchar(2000)")]
         public string? KmsIdList { get; set; }
 
         /// <summary>
@@ -100,7 +100,6 @@ namespace AntSK.Domain.Repositories
         [SugarColumn(DefaultValue = "3")]
         public int MaxMatchesCount { get; set; } = 3;
 
-
         [SugarColumn(DefaultValue = "20")]
         public int RerankCount { get; set; } = 20;
         /// <summary>
@@ -108,5 +107,8 @@ namespace AntSK.Domain.Repositories
         /// </summary>
         [SugarColumn(DefaultValue = "2048")]
         public int AnswerTokens { get; set; } = 2048;
+
+        [SugarColumn(DefaultValue = "0")]
+        public int IsShow { get; set; } = 0;
     }
 }

@@ -137,6 +137,11 @@
                         <Slider TValue="double" Style="display: inline-block;width: 300px; " Min="0" Max="100" DefaultValue="70" @bind-Value="@context.Relevance" />
                     </FormItem>
                 }
+
+                <FormItem Label="是否在OA中显示" LabelCol="LayoutModel._formItemLayout.LabelCol" WrapperCol="LayoutModel._formItemLayout.WrapperCol">
+                    <Switch @bind-Value="@isShow" />
+                </FormItem>
+
                 <FormItem Label=" " Style="margin-top:32px" WrapperCol="LayoutModel._submitFormLayout.WrapperCol">
                     <Button Type="primary" HtmlType="submit">
                         保存

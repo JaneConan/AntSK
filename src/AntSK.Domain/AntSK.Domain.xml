@@ -157,6 +157,26 @@
             模型类型
             </summary>
         </member>
+        <member name="F:AntSK.Domain.Domain.Model.Enum.FeedBacksStatus.Submitted">
+            <summary>
+            反馈已提交，等待处理
+            </summary>
+        </member>
+        <member name="F:AntSK.Domain.Domain.Model.Enum.FeedBacksStatus.InProgress">
+            <summary>
+            反馈正在处理中
+            </summary>
+        </member>
+        <member name="F:AntSK.Domain.Domain.Model.Enum.FeedBacksStatus.Resolved">
+            <summary>
+            反馈已解决
+            </summary>
+        </member>
+        <member name="F:AntSK.Domain.Domain.Model.Enum.FeedBacksStatus.Closed">
+            <summary>
+            反馈已关闭（最终状态）
+            </summary>
+        </member>
         <member name="P:AntSK.Domain.Domain.Model.PageList`1.PageIndex">
             <summary>
             当前页，从1开始
@@ -472,6 +492,21 @@
         <member name="P:AntSK.Domain.Repositories.Chats.FileName">
             <summary>
             文件名
+            </summary>
+        </member>
+        <member name="P:AntSK.Domain.Repositories.FeedBacks.Content">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:AntSK.Domain.Repositories.FeedBacks.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:AntSK.Domain.Repositories.FeedBacks.Status">
+            <summary>
+            状态
             </summary>
         </member>
         <member name="P:AntSK.Domain.Repositories.Funs.Path">

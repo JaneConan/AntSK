@@ -12,16 +12,47 @@
     <TitleTemplate>
         <Icon Type="bulb" /> 请选择智能体
         <Select DataSource="@_list"
-                @bind-Value="@AppId"
-                DefaultValue="@("lucy")"
-                ValueProperty="c=>c.Id"
-                LabelProperty="c=>c.Name"
-                Style="width:150px">
+        @bind-Value="@AppId"
+        DefaultValue="@("lucy")"
+        ValueProperty="c=>c.Id"
+        LabelProperty="c=>c.Name"
+        Style="width:150px">
         </Select>
     </TitleTemplate>
     <ChildContent>
         <div style="text-align:center !important">
-            <span>技术支持 数智中心</span>
+            <span>技术支持 数智中心</span> &nbsp;&nbsp;
+            <Button Type="ButtonType.Link" @onclick="AddFeedBack">
+                <Icon Type="mail" Theme="outline" /> 问题反馈
+            </Button>
+
+            <Modal Title="问题反馈"
+            Visible="@_fileVisible"
+            OnOk="@FileHandleOk"
+            OnCancel="@FileHandleCancel"
+            ConfirmLoading="@_fileConfirmLoading">
+                <span>请输入您的建议，我们将匿名收集您的宝贵意见。</span>
+                <br />
+                <span>感谢您对数智中心的支持！</span>
+                <br />
+                <TextArea Placeholder="请输入您的宝贵意见" @bind-Value="@FeedBackMsg" AutoSize="true" OnResize="OnResize" MinRows="5" MaxRows="10" />
+                @*<br />
+                <Upload Action="@("api/File/UploadFile")"
+                        Name="file"
+                        Drag
+                        Multiple
+                         Accept="*/*"
+                         BeforeUpload="BeforeUpload"
+                         OnSingleCompleted="OnSingleCompleted">
+                     <p class="ant-upload-drag-icon">
+                         <Icon Type="inbox" />
+                     </p>
+                     <p class="ant-upload-text">单击或拖动文件到此区域进行上传</p>
+                     <p class="ant-upload-hint">
+                         请上传问题截图
+                     </p>
+                 </Upload> *@
+            </Modal>
         </div>
     </ChildContent>
     <Body>
@@ -38,17 +69,17 @@
 </Card>
 <style>
     #chat {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow-x: hidden;
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
     }
 
     .ant-card-body {
-        padding: 0px 24px 24px 24px
+    padding: 0px 24px 24px 24px
     }
 </style>
 @code {
@@ -62,6 +93,87 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _list = _apps_Repositories.GetList();
+        _list = _apps_Repositories.GetList(s => s.IsShow == 1);
+        FeedBackMsg = "";
+    }
+
+    private void OnResize(OnResizeEventArgs args)
+    {
+        Console.WriteLine($"OnResizeEvent width:{args.Width},height:{args.Height}");
+    }
+
+    bool _fileVisible = false;
+    bool _fileConfirmLoading = false;
+
+    private string FeedBackMsg;
+
+    List<FileInfoModel> fileList = new List<FileInfoModel>();
+
+    [Inject] protected MessageService? _message { get; set; }
+    [Inject] protected ILogger<FeedBacks> _logger { get; set; }
+
+    private async Task AddFeedBack()
+    {
+        _fileVisible = true;
+    }
+
+    [Inject] IFeedBacks_Repositories _feedBacks_Repositories { get; set; }
+
+    private async Task FileHandleOk(MouseEventArgs e)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(FeedBackMsg))
+            {
+                _message.Error("请输入您的宝贵意见！");
+                return;
+            }
+
+            _feedBacks_Repositories.Insert(new FeedBacks() { Id = Guid.NewGuid().ToString(), Content = FeedBackMsg, CreateTime = DateTime.Now });
+            // foreach (var file in fileList)
+            // {
+            //     _funs_Repositories.Insert(new Funs() { Id = Guid.NewGuid().ToString(), Path = file.FilePath });
+            //     _functionService.FuncLoad(file.FilePath);
+            // }
+            // _message.Info(FeedBackMsg);
+            _message.Success("反馈成功！感谢支持！");
+            _fileVisible = false;
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex.Message + " ---- " + ex.StackTrace);
+        }
+    }
+    private void FileHandleCancel(MouseEventArgs e)
+    {
+        _fileVisible = false;
+    }
+
+    bool BeforeUpload(UploadFileItem file)
+    {
+        if (file == null)
+        {
+            _message.Error("请上传文件!");
+        }
+        var IsLt500K = file.Size < 1024 * 1024 * 100;
+        if (!IsLt500K)
+        {
+            _message.Error("文件需不大于100MB!");
+        }
+
+        return IsLt500K;
+    }
+
+    private void OnSingleCompleted(UploadInfo fileinfo)
+    {
+        if (fileinfo.File.State == UploadState.Success)
+        {
+            //文件列表
+            fileList.Add(new FileInfoModel()
+                {
+                    FileName = fileinfo.File.FileName,
+                    FilePath = fileinfo.File.Url = fileinfo.File.Response
+                });
+        }
     }
 }
