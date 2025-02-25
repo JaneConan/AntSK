@@ -63,4 +63,19 @@ namespace AntSK.Domain.Domain.Model.Dto.OpenAPI
         public OpenAIMessage delta { get; set; }
     }
 
+    public class AppList
+    {
+        public List<AppData> data { get; set; }
+
+        [JsonProperty("object")]
+        public string obj { get; set; } = "list";
+    }
+
+    public class AppData
+    {
+        public string id { get; set; }
+
+        [JsonProperty("object")]
+        public string obj { get; set; } = "model";
+    }
 }

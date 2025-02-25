@@ -18,6 +18,7 @@ namespace AntSK.Services.OpenApi
     public interface IOpenApiService
     {
         Task Chat(OpenAIModel model, string sk, HttpContext HttpContext);
+        Task Models(string sk, HttpContext HttpContext);
 
         Task<double> Rerank(RerankModel model, string sk, HttpContext HttpContext);
     }
@@ -46,7 +47,7 @@ namespace AntSK.Services.OpenApi
                 switch (app.Type)
                 {
                     case "chat":
-                        (questions, history) = await GetHistory(model,app.Prompt);
+                        (questions, history) = await GetHistory(model, app.Prompt);
                         //普通会话
                         history.AddUserMessage(questions);
                         if (model.stream)
@@ -55,7 +56,7 @@ namespace AntSK.Services.OpenApi
                             result1.created = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                             result1.choices = new List<StreamChoicesModel>()
                                 { new StreamChoicesModel() { delta = new OpenAIMessage() { role = "assistant" } } };
-                            await SendChatStream(HttpContext, result1, app,history);
+                            await SendChatStream(HttpContext, result1, app, history);
                             return;
                         }
                         else
@@ -71,7 +72,7 @@ namespace AntSK.Services.OpenApi
                         }
                         break;
                     case "kms":
-                        (questions, history) = await GetHistory(model,"");
+                        (questions, history) = await GetHistory(model, "");
                         //知识库问答
                         if (model.stream)
                         {
@@ -79,7 +80,7 @@ namespace AntSK.Services.OpenApi
                             result3.created = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                             result3.choices = new List<StreamChoicesModel>()
                                 { new StreamChoicesModel() { delta = new OpenAIMessage() { role = "assistant" } } };
-                            await SendKmsStream(HttpContext, result3, app, questions,history);
+                            await SendKmsStream(HttpContext, result3, app, questions, history);
                         }
                         else
                         {
@@ -87,13 +88,30 @@ namespace AntSK.Services.OpenApi
                             result4.created = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                             result4.choices = new List<ChoicesModel>()
                                 { new ChoicesModel() { message = new OpenAIMessage() { role = "assistant" } } };
-                            result4.choices[0].message.content = await SendKms(questions,history, app);
+                            result4.choices[0].message.content = await SendKms(questions, history, app);
                             HttpContext.Response.ContentType = "application/json";
                             await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(result4));
                             await HttpContext.Response.CompleteAsync();
                         }
                         break;
                 }
+            }
+        }
+
+        public async Task Models(string sk, HttpContext HttpContext)
+        {
+            string headerValue = sk;
+            Regex regex = new Regex(@"Bearer (.*)");
+            Match match = regex.Match(headerValue);
+            string token = match.Groups[1].Value;
+            Apps app = _apps_Repositories.GetFirst(p => p.SecretKey == token);
+            if (app.IsNotNull())
+            {
+                HttpContext.Response.ContentType = "application/json";
+                var res = JsonConvert.SerializeObject(new AppList() { data = new List<AppData>() { new AppData() { id = app.Name} } }, Formatting.Indented);
+
+                await HttpContext.Response.WriteAsync(res);
+                await HttpContext.Response.CompleteAsync();
             }
         }
 
@@ -167,7 +185,7 @@ namespace AntSK.Services.OpenApi
             return "";
         }
 
-        private async Task SendKmsStream(HttpContext HttpContext, OpenAIStreamResult result, Apps app, string questions,ChatHistory history)
+        private async Task SendKmsStream(HttpContext HttpContext, OpenAIStreamResult result, Apps app, string questions, ChatHistory history)
         {
             HttpContext.Response.Headers.Add("Content-Type", "text/event-stream;charset=utf-8");
             var chatResult = _chatService.SendKmsByAppAsync(app, questions, history, "");
@@ -230,7 +248,7 @@ namespace AntSK.Services.OpenApi
         /// <param name="app"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        private async Task<(string,ChatHistory)> GetHistory(OpenAIModel model,string systemPrompt)
+        private async Task<(string, ChatHistory)> GetHistory(OpenAIModel model, string systemPrompt)
         {
             ChatHistory history = new ChatHistory();
             if (!string.IsNullOrEmpty(systemPrompt))
@@ -238,7 +256,7 @@ namespace AntSK.Services.OpenApi
                 history = new ChatHistory(systemPrompt);
             }
             string questions = model.messages[model.messages.Count - 1].content;
-            for (int i = 0; i < model.messages.Count()-1 ; i++)
+            for (int i = 0; i < model.messages.Count() - 1; i++)
             {
                 var item = model.messages[i];
                 if (item.role.ComparisonIgnoreCase("user"))
@@ -254,7 +272,7 @@ namespace AntSK.Services.OpenApi
                     history.AddSystemMessage(item.content);
                 }
             }
-            return (questions,history);
+            return (questions, history);
         }
 
         public async Task<double> Rerank(RerankModel model, string sk, HttpContext HttpContext)
@@ -264,7 +282,7 @@ namespace AntSK.Services.OpenApi
             List<string> rerank = new List<string>();
             rerank.Add(model.query);
             rerank.Add(model.document);
-            var result= BegRerankConfig.Rerank(rerank);
+            var result = BegRerankConfig.Rerank(rerank);
             return result;
         }
     }

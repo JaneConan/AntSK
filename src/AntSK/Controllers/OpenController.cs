@@ -40,5 +40,29 @@ namespace AntSK.Controllers
             }
 
         }
+
+        /// <summary>
+        /// 智能体对接接口
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("v1/models")]
+        public async Task Models()
+        {
+            string sk = HttpContext.Request.Headers["Authorization"].ConvertToString();
+            await _openApiService.Models(sk, HttpContext);
+        }
+
+        /// <summary>
+        /// 对话接口
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("v1/chat/completions")]
+        public async Task Completions(OpenAIModel model)
+        {
+            string sk = HttpContext.Request.Headers["Authorization"].ConvertToString();
+            await _openApiService.Chat(model, sk, HttpContext);
+        }
     }
 }
