@@ -3,7 +3,7 @@ body {
     height: 100vh;
     overflow: hidden;
     display: flex;
-    font-family: "Anton", sans-serif;
+    font-family: 'Noto Sans SC', sans-serif;
     justify-content: center;
     align-items: center;
     perspective: 1000px;

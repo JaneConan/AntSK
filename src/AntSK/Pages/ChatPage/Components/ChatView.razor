@@ -84,6 +84,15 @@
             <Upload DefaultFileList="fileList" OnRemove="HandleFileRemove" />
         </Flex>
     }
+    @if (app.Id == "af790856-be2c-4bb7-a1d3-265e10d7eb5d")
+    {
+        <div style="width: 90%; margin-top: 10px; margin-bottom:10px">
+            <Button Disabled="@Sendding" OnClick="@(async () => await OnSendAsync("今日餐单"))">今日餐单</Button>
+            <Button Disabled="@Sendding" OnClick="@(async () => await OnSendAsync("年假剩余天数如何计算"))">年假剩余天数如何计算</Button>
+            <Button Disabled="@Sendding" OnClick="@(async () => await OnSendAsync("员工安全守则"))">员工安全守则</Button>
+        </div>
+    }
+
     <Flex Justify="end">
         <AntDesign.Input @bind-Value="@(_messageInput)" DebounceMilliseconds="@(-1)" Placeholder="输入消息回车发送" OnPressEnter="@(async () => await OnSendAsync())" Disabled="@Sendding"></AntDesign.Input>
         @if (app.EmbeddingModelID != null)
@@ -112,7 +121,7 @@
 <style>
 
     body {
-        font-family: Arial, sans-serif;
+        font-family: 'Noto Sans SC', sans-serif;
         margin: 0;
         justify-content: center;
         align-items: flex-start;

@@ -185,15 +185,20 @@ namespace AntSK.Pages.ChatPage.Components
                 _ = Message.Info("没有会话记录");
             }
         }
-        protected async Task OnSendAsync()
+        protected async Task OnSendAsync(string? question = "")
         {
             try
             {
+                if (!string.IsNullOrEmpty(question))
+                {
+                    _messageInput = question;
+                }
                 if (string.IsNullOrWhiteSpace(_messageInput))
                 {
                     _ = Message.Info("请输入消息", 2);
                     return;
                 }
+
                 var filePath = fileList.FirstOrDefault()?.Url;
                 var fileName = fileList.FirstOrDefault()?.FileName;
 
@@ -218,21 +223,20 @@ namespace AntSK.Pages.ChatPage.Components
                     await SendAsync(_messageInput, filePath);
                 }).ContinueWith(task =>
                 {
-
                     _messageInput = "";
                     Sendding = false;
                     InvokeAsync(StateHasChanged);
                 });
 
-
             }
             catch (System.Exception ex)
             {
+                _messageInput = "";
                 Sendding = false;
+                InvokeAsync(StateHasChanged);
                 _logger.LogError("异常:" + ex.Message);
                 _ = Message.Error("异常:" + ex.Message, 2);
             }
-
         }
 
 
@@ -349,6 +353,7 @@ namespace AntSK.Pages.ChatPage.Components
             MessageList.Add(info);
 
             await InvokeAsync(StateHasChanged);
+            await _JSRuntime.ScrollToBottomAsync("scrollDiv");
 
             var chatResult = _chatService.SendKmsByAppAsync(app, questions, history, filePath, _relevantSources, info.Id);
             
@@ -359,6 +364,7 @@ namespace AntSK.Pages.ChatPage.Components
                 info.Context = Markdown.ToHtml(rawContent.ToString().Replace("<think>", "<div class=\"think\">").Replace("</think>", "</div>"));
                 await Task.Delay(10);
                 await InvokeAsync(StateHasChanged);
+                await _JSRuntime.ScrollToBottomAsync("scrollDiv");
             }
             //全部处理完后再处理一次Markdown 处理代码高亮
             await MarkDown();

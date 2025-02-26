@@ -37,14 +37,14 @@
   margin-right: 16px;
   vertical-align: top;
 }
-.container__b__0 .title {
-  position: relative;
-  top: 2px;
-  color: rgba(0, 0, 0, 0.85);
-  font-weight: 600;
-  font-size: 33px;
-  font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
-}
+    .container__b__0 .title {
+        position: relative;
+        top: 2px;
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 33px;
+        font-family: 'Noto Sans SC', sans-serif;
+    }
 .container__b__0 .desc {
   margin-top: 12px;
   margin-bottom: 40px;
