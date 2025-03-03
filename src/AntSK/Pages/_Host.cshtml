@@ -50,5 +50,17 @@
     <script src="./js/prism-copy-to-clipboard.min.js"></script>
     <!--自动去cdn加载对应语言的代码高亮js-->
     <script src="./js/prism-autoloader.min.js"></script>
+    <!--数学公式代码-->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+          }
+        };
+    </script>
+    <script id="MathJax-script" async
+            src="./js/tex-chtml.js">
+    </script>
+    <script src="./js/mathjax.js"></script>
 </body>
 </html>

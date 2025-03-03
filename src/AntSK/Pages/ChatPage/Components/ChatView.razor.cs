@@ -337,8 +337,9 @@ namespace AntSK.Pages.ChatPage.Components
         /// 发送知识库问答
         /// </summary>
         /// <param name="questions"></param>
-        /// <param name="msg"></param>
+        /// <param name="history"></param>
         /// <param name="app"></param>
+        /// <param name="filePath"></param>
         /// <returns></returns>
         private async Task SendKms(string questions, ChatHistory history, Apps app, string? filePath)
         {
@@ -356,15 +357,30 @@ namespace AntSK.Pages.ChatPage.Components
             await _JSRuntime.ScrollToBottomAsync("scrollDiv");
 
             var chatResult = _chatService.SendKmsByAppAsync(app, questions, history, filePath, _relevantSources, info.Id);
-            
+
             StringBuilder rawContent = new StringBuilder();
+            rawContent.Append("<think>");
+
+            // Markdig的"UseAdvancedExtensions"选项包含了CommonMark之外的许多常见扩展，如引用、图片、脚注、网格表格、数学公式、任务列表、图表等。
+            var pipeline = new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .UseEmojiAndSmiley()
+                .UseEmphasisExtras()
+                .UseSmartyPants()
+                .UseSoftlineBreakAsHardlineBreak()
+                .Build();
             await foreach (var content in chatResult)
             {
+                if (content.ConvertToString() == "<think>")
+                {
+                    continue;
+                }
                 rawContent.Append(content.ConvertToString());
-                info.Context = Markdown.ToHtml(rawContent.ToString().Replace("<think>", "<div class=\"think\">").Replace("</think>", "</div>"));
+                info.Context = Markdown.ToHtml(rawContent.ToString().Replace("<think>", "<div class=\"think\">").Replace("</think>", "</div>").Replace("\\[", "$$").Replace("\\]", "$$"), pipeline);
                 await Task.Delay(10);
                 await InvokeAsync(StateHasChanged);
                 await _JSRuntime.ScrollToBottomAsync("scrollDiv");
+                await _JSRuntime.InvokeVoidAsync("applyMathJax");
             }
             //全部处理完后再处理一次Markdown 处理代码高亮
             await MarkDown();
@@ -381,8 +397,22 @@ namespace AntSK.Pages.ChatPage.Components
             Chats info = null;
             var chatResult = _chatService.SendChatByAppAsync(app, history);
             StringBuilder rawContent = new StringBuilder();
+            rawContent.Append("<think>");
+
+            // Markdig的"UseAdvancedExtensions"选项包含了CommonMark之外的许多常见扩展，如引用、图片、脚注、网格表格、数学公式、任务列表、图表等。
+            var pipeline = new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                 .UseEmojiAndSmiley()
+                 .UseEmphasisExtras()
+                 .UseSmartyPants()
+                 .UseSoftlineBreakAsHardlineBreak()
+                .Build();
             await foreach (var content in chatResult)
             {
+                if (content.ConvertToString() == "<think>")
+                {
+                    continue;
+                }
                 if (info == null)
                 {
                     rawContent.Append(content.ConvertToString());
@@ -394,14 +424,19 @@ namespace AntSK.Pages.ChatPage.Components
                     info.CreateTime = DateTime.Now;
 
                     MessageList.Add(info);
+
+                    await InvokeAsync(StateHasChanged);
+                    await _JSRuntime.ScrollToBottomAsync("scrollDiv");
                 }
                 else
                 {
                     rawContent.Append(content.ConvertToString());
                 }
-                info.Context = Markdown.ToHtml(rawContent.ToString().Replace("<think>", "<div class=\"think\">").Replace("</think>", "</div>"));
+                info.Context = Markdown.ToHtml(rawContent.ToString().Replace("<think>", "<div class=\"think\">").Replace("</think>", "</div>").Replace("\\[", "$$").Replace("\\]", "$$"), pipeline);
                 await Task.Delay(30);
                 await InvokeAsync(StateHasChanged);
+                await _JSRuntime.ScrollToBottomAsync("scrollDiv");
+                await _JSRuntime.InvokeVoidAsync("applyMathJax");
             }
             //全部处理完后再处理一次Markdown 处理代码高亮
             await MarkDown();
@@ -416,6 +451,7 @@ namespace AntSK.Pages.ChatPage.Components
             await InvokeAsync(StateHasChanged);
             await _JSRuntime.InvokeVoidAsync("Prism.highlightAll");
             await _JSRuntime.ScrollToBottomAsync("scrollDiv");
+            await _JSRuntime.InvokeVoidAsync("applyMathJax");
         }
 
         /// <summary>

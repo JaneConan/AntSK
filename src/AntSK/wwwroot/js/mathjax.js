@@ -1,0 +1,3 @@
+﻿window.applyMathJax = () => {
+    MathJax.typesetPromise();
+};

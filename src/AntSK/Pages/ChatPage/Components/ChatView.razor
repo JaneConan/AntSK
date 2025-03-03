@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @layout OpenLayout
 @inherits AntDomComponentBase
+@inject IJSRuntime JSRuntime
 
 
 <div id="chat">
@@ -144,7 +145,7 @@
         margin: 10px;
         margin-bottom: 0;
         border-radius: 5px;
-        max-width: 70%;
+        max-width: 80%;
         position: relative;
     }
 
@@ -168,7 +169,16 @@
         color: gray;
         font-style: italic;
     }
+
+    <!-- 可选：为公式容器添加样式 -->
+    .math {
+        margin: 1em 0;
+        text-align: center; /* 让公式居中 */
+    }
 </style>
 @code {
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("applyMathJax");
+    }
 }
