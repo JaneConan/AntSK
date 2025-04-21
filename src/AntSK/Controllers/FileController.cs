@@ -52,8 +52,8 @@ namespace AntSK.Controllers
         public async Task<IActionResult> DownExcelTemplate()
         {
             var list = new List<KMSExcelModel>();
-            var file = ExeclHelper.ListToExcel<KMSExcelModel>(list.ToArray(), "AntSK导入模板");
-            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "AntSK导入模板.xlsx");
+            var file = ExeclHelper.ListToExcel<KMSExcelModel>(list.ToArray(), "导入模板");
+            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "导入模板.xlsx");
         }
     }
 }

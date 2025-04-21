@@ -43,7 +43,6 @@ namespace AntSK.Services.OpenApi
             Apps app = _apps_Repositories.GetFirst(p => p.SecretKey == token);
             if (app.IsNotNull())
             {
-
                 switch (app.Type)
                 {
                     case "chat":
@@ -53,7 +52,7 @@ namespace AntSK.Services.OpenApi
                         if (model.stream)
                         {
                             OpenAIStreamResult result1 = new OpenAIStreamResult();
-                            result1.created = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                            result1.created = DateTimeOffset.Now.ToUnixTimeSeconds();
                             result1.choices = new List<StreamChoicesModel>()
                                 { new StreamChoicesModel() { delta = new OpenAIMessage() { role = "assistant" } } };
                             await SendChatStream(HttpContext, result1, app, history);
@@ -62,7 +61,7 @@ namespace AntSK.Services.OpenApi
                         else
                         {
                             OpenAIResult result2 = new OpenAIResult();
-                            result2.created = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                            result2.created = DateTimeOffset.Now.ToUnixTimeSeconds();
                             result2.choices = new List<ChoicesModel>()
                                 { new ChoicesModel() { message = new OpenAIMessage() { role = "assistant" } } };
                             result2.choices[0].message.content = await SendChat(history, app);
@@ -77,7 +76,7 @@ namespace AntSK.Services.OpenApi
                         if (model.stream)
                         {
                             OpenAIStreamResult result3 = new OpenAIStreamResult();
-                            result3.created = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                            result3.created = DateTimeOffset.Now.ToUnixTimeSeconds();
                             result3.choices = new List<StreamChoicesModel>()
                                 { new StreamChoicesModel() { delta = new OpenAIMessage() { role = "assistant" } } };
                             await SendKmsStream(HttpContext, result3, app, questions, history);
@@ -85,7 +84,7 @@ namespace AntSK.Services.OpenApi
                         else
                         {
                             OpenAIResult result4 = new OpenAIResult();
-                            result4.created = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                            result4.created = DateTimeOffset.Now.ToUnixTimeSeconds();
                             result4.choices = new List<ChoicesModel>()
                                 { new ChoicesModel() { message = new OpenAIMessage() { role = "assistant" } } };
                             result4.choices[0].message.content = await SendKms(questions, history, app);
@@ -137,7 +136,6 @@ namespace AntSK.Services.OpenApi
         /// <summary>
         /// 发送普通对话
         /// </summary>
-        /// <param name="questions"></param>
         /// <param name="history"></param>
         /// <param name="app"></param>
         /// <returns></returns>
@@ -210,6 +208,7 @@ namespace AntSK.Services.OpenApi
         /// 发送知识库问答
         /// </summary>
         /// <param name="questions"></param>
+        /// <param name="history"></param>
         /// <param name="app"></param>
         /// <returns></returns>
         private async Task<string> SendKms(string questions, ChatHistory history, Apps app)

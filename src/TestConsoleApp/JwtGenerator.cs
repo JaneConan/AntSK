@@ -7,7 +7,7 @@ public class JwtGenerator
 {
     public static string GetToken(string username, string secret)
     {
-        var expiration = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 60;
+        var expiration = DateTimeOffset.Now.ToUnixTimeSeconds() + 60;
 
         var token = JwtBuilder.Create()
             .WithAlgorithm(new HMACSHA256Algorithm())
