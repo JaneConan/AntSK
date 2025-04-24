@@ -72,6 +72,24 @@
     ]
   },
   {
+    "path": "/analysis",
+    "name": "统计分析",
+    "key": "analysis",
+    "icon": "monitor",
+    "children": [
+      {
+        "path": "/analysis/chathistory",
+        "name": "提问记录查询",
+        "key": "analysis.chathistory"
+      },
+      {
+        "path": "/analysis/chatcolumn",
+        "name": "提问记录分析",
+        "key": "analysis.chatcolumn"
+      }
+    ]
+  },
+  {
     "path": "/",
     "name": "概览",
     "key": "antskdoc",

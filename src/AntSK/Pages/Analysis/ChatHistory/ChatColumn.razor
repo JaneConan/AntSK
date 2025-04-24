@@ -1,0 +1,226 @@
+﻿@namespace AntSK.Pages.Analysis.AIModel
+@page "/analysis/chatcolumn"
+@using AntSK.Services.Auth
+@inherits AuthComponentBase
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel
+@using AntDesign.TableModels
+@using AntSK.Domain.Repositories
+@using AntSK.Domain.Common.Map
+@using AntDesign.Charts
+@using Title = AntDesign.Charts.Title
+@attribute [Authorize(Roles = "AntSKAdmin")]
+
+
+@code
+{
+    RenderFragment prefixUser =@<Icon Type="@IconType.Outline.User" />;
+    RenderFragment prefixQuestion =@<Icon Type="@IconType.Outline.CheckCircle" />;
+    RenderFragment prefixLike =@<Icon Type="@IconType.Outline.Like" />;
+    RenderFragment prefixAngent =@<Icon Type="@IconType.Outline.Smile" />;
+}
+
+<Tabs>
+    <TabPane Key="1">
+        <TabTemplate>本周提问记录分析</TabTemplate>
+        <ChildContent>
+            <Row Gutter="16">
+                <Col Span="12">
+                <Statistic Title="使用用户数" Value="@_totalUsers" PrefixTemplate="@prefixUser" />
+                </Col>
+                <Col Span="12">
+                <Statistic Title="用户提问数" Value="@_totalChats" PrefixTemplate="@prefixQuestion" />
+                </Col>
+            </Row>
+            <br />
+            <Row Gutter="16">
+                <Col Span="12">
+                <Statistic Title="反馈数" Value="@_totalFeedBacks" PrefixTemplate="@prefixLike" />
+                </Col>
+                <Col Span="12">
+                <Statistic Title="使用智能体数" Value="@_useApps" Suffix="@_totalAppsString" PrefixTemplate="@prefixAngent" />
+                </Col>
+            </Row>
+            <br />
+            <AntDesign.Charts.Column Data="data1" Config="config1" />
+        </ChildContent>
+    </TabPane>
+</Tabs>
+@using System.Text.Json;
+
+@code {
+
+    object[] data1 = new object[] { };
+
+    ColumnConfig config1 = new()
+        {
+            IsGroup = true,
+            XField = "星期",
+            YField = "提问量",
+            YAxis = new ValueAxis()
+            {
+                Min = 0,
+            },
+            Label = new ColumnViewConfigLabel()
+            {
+                Visible = true,
+            },
+            SeriesField = "name",
+            Color = new string[] { "#1ca9e6", "#f88c24" },
+        };
+
+    [Inject] IChats_Repositories _chats_Repositories { get; set; }
+    [Inject] IFeedBacks_Repositories _feedbacks_Repositories { get; set; }
+    [Inject] IApps_Repositories _apps_Repositories { get; set; }
+
+    int _useApps = 0;
+    int _totalApps = 0;
+    string _totalAppsString = "/ ";
+    int _totalUsers = 0;
+    int _totalChats = 0;
+    int _totalFeedBacks = 0;
+
+    DateTime? weekDateStart = DateTimeExtension.GetTimeStartByType(DateTime.Now.Date, "Week");
+    DateTime? weekhDateEnd = DateTimeExtension.GetTimeEndByType(DateTime.Now.Date, "Week");
+
+    int _mondayAM = 0;
+    int _mondayPM = 0;
+
+    int _tuesdayAM = 0;
+    int _tuesdayPM = 0;
+
+    int _wednesdayAM = 0;
+    int _wednesdayPM = 0;
+
+    int _thursdayAM = 0;
+    int _thursdayPM = 0;
+
+    int _fridayAM = 0;
+    int _fridayPM = 0;
+
+    int _saturdayAM = 0;
+    int _saturdayPM = 0;
+
+    int _sundayAM = 0;
+    int _sundayPM = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitData();
+    }
+
+    private async Task InitData()
+    {
+        _totalApps = await _apps_Repositories.CountAsync(s => true);
+        _totalAppsString = _totalAppsString + _totalApps.ToString();
+        _totalFeedBacks = await _feedbacks_Repositories.CountAsync(s => true);
+
+        List<Chats> allChats = await _chats_Repositories.GetDB().Queryable<Chats>()
+           .Where(c => c.UserName == null && c.IsSend == true && c.CreateTime >= weekDateStart && c.CreateTime <= weekhDateEnd)
+           .Select(c => new Chats
+               {
+                   Id = c.Id,
+                   AppId = c.AppId,
+                   IPAddress = c.IPAddress,
+                   CreateTime = c.CreateTime
+               }).OrderByDescending(c => c.CreateTime).ToListAsync();
+        _totalChats = allChats.Count;
+        _totalUsers = allChats.Select(p => p.IPAddress).Distinct().Count();
+        _useApps = allChats.Select(p => p.AppId).Distinct().Count();
+
+        _mondayAM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date && p.CreateTime.TimeOfDay >= TimeSpan.Zero && p.CreateTime.TimeOfDay < new TimeSpan(12, 0, 0));
+        _tuesdayAM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().AddDays(1) && p.CreateTime.TimeOfDay >= TimeSpan.Zero && p.CreateTime.TimeOfDay < new TimeSpan(12, 0, 0));
+        _wednesdayAM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().AddDays(2).Date && p.CreateTime.TimeOfDay >= TimeSpan.Zero && p.CreateTime.TimeOfDay < new TimeSpan(12, 0, 0));
+        _thursdayAM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().AddDays(3).Date && p.CreateTime.TimeOfDay >= TimeSpan.Zero && p.CreateTime.TimeOfDay < new TimeSpan(12, 0, 0));
+        _fridayAM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().AddDays(4).Date && p.CreateTime.TimeOfDay >= TimeSpan.Zero && p.CreateTime.TimeOfDay < new TimeSpan(12, 0, 0));
+        _saturdayAM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().AddDays(5).Date && p.CreateTime.TimeOfDay >= TimeSpan.Zero && p.CreateTime.TimeOfDay < new TimeSpan(12, 0, 0));
+        _sundayAM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().AddDays(6).Date && p.CreateTime.TimeOfDay >= TimeSpan.Zero && p.CreateTime.TimeOfDay < new TimeSpan(12, 0, 0));
+
+        _mondayPM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date && p.CreateTime.TimeOfDay >= new TimeSpan(12, 0, 0) && p.CreateTime.TimeOfDay < new TimeSpan(24, 0, 0));
+        _tuesdayPM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date.AddDays(1) && p.CreateTime.TimeOfDay >= new TimeSpan(12, 0, 0) && p.CreateTime.TimeOfDay < new TimeSpan(24, 0, 0));
+        _wednesdayPM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date.AddDays(2) && p.CreateTime.TimeOfDay >= new TimeSpan(12, 0, 0) && p.CreateTime.TimeOfDay < new TimeSpan(24, 0, 0));
+        _thursdayPM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date.AddDays(3) && p.CreateTime.TimeOfDay >= new TimeSpan(12, 0, 0) && p.CreateTime.TimeOfDay < new TimeSpan(24, 0, 0));
+        _fridayPM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date.AddDays(4) && p.CreateTime.TimeOfDay >= new TimeSpan(12, 0, 0) && p.CreateTime.TimeOfDay < new TimeSpan(24, 0, 0));
+        _saturdayPM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date.AddDays(5) && p.CreateTime.TimeOfDay >= new TimeSpan(12, 0, 0) && p.CreateTime.TimeOfDay < new TimeSpan(24, 0, 0));
+        _sundayPM = allChats.Count(p => p.CreateTime.Date == weekDateStart.GetValueOrDefault().Date.AddDays(6) && p.CreateTime.TimeOfDay >= new TimeSpan(12, 0, 0) && p.CreateTime.TimeOfDay < new TimeSpan(24, 0, 0));
+
+        data1 = new object[] {
+    new  {
+        name= "上午",
+        星期= "周一" + weekDateStart.GetValueOrDefault().Date.ToString("yyyy/MM/dd"),
+        提问量= _mondayAM,
+    },
+    new  {
+        name= "上午",
+        星期= "周二" + weekDateStart.GetValueOrDefault().Date.AddDays(1).ToString("yyyy/MM/dd"),
+        提问量= _tuesdayAM,
+    },
+    new  {
+        name= "上午",
+        星期= "周三" + weekDateStart.GetValueOrDefault().Date.AddDays(2).ToString("yyyy/MM/dd"),
+        提问量= _wednesdayAM,
+    },
+    new  {
+        name= "上午",
+        星期= "周四" + weekDateStart.GetValueOrDefault().Date.AddDays(3).ToString("yyyy/MM/dd"),
+        提问量= _thursdayAM,
+    },
+    new  {
+        name= "上午",
+        星期= "周五" + weekDateStart.GetValueOrDefault().Date.AddDays(4).ToString("yyyy/MM/dd"),
+        提问量= _fridayAM,
+    },
+    new  {
+        name= "上午",
+        星期= "周六" + weekDateStart.GetValueOrDefault().Date.AddDays(5).ToString("yyyy/MM/dd"),
+        提问量= _saturdayAM,
+    },
+    new  {
+        name= "上午",
+        星期= "周日" + weekDateStart.GetValueOrDefault().Date.AddDays(6).ToString("yyyy/MM/dd"),
+        提问量= _sundayAM,
+    },
+    new  {
+        name= "下午",
+        星期= "周一" + weekDateStart.GetValueOrDefault().Date.ToString("yyyy/MM/dd"),
+        提问量= _mondayPM,
+    },
+    new  {
+        name= "下午",
+        星期= "周二" + weekDateStart.GetValueOrDefault().Date.AddDays(1).ToString("yyyy/MM/dd"),
+        提问量= _tuesdayPM,
+    },
+    new  {
+        name= "下午",
+        星期= "周三" + weekDateStart.GetValueOrDefault().Date.AddDays(2).ToString("yyyy/MM/dd"),
+        提问量= _wednesdayPM,
+    },
+    new  {
+        name= "下午",
+        星期= "周四" + weekDateStart.GetValueOrDefault().Date.AddDays(3).ToString("yyyy/MM/dd"),
+        提问量= _thursdayPM,
+    },
+    new  {
+        name= "下午",
+        星期= "周五" + weekDateStart.GetValueOrDefault().Date.AddDays(4).ToString("yyyy/MM/dd"),
+        提问量= _fridayPM,
+    },
+    new  {
+        name= "下午",
+        星期= "周六" + weekDateStart.GetValueOrDefault().Date.AddDays(5).ToString("yyyy/MM/dd"),
+        提问量= _saturdayPM,
+    },
+    new  {
+        name= "下午",
+        星期= "周日" + weekDateStart.GetValueOrDefault().Date.AddDays(6).ToString("yyyy/MM/dd"),
+        提问量= _sundayPM,
+    },
+};
+
+    }
+
+    private async Task Search(string searchKey)
+    {
+        await InitData();
+    }
+}

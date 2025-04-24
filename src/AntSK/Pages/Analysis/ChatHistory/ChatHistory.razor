@@ -1,0 +1,127 @@
+﻿@namespace AntSK.Pages.Analysis.AIModel
+@page "/analysis/chathistory"
+@using AntSK.Services.Auth
+@inherits AuthComponentBase
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel
+@using AntDesign.TableModels
+@using AntSK.Domain.Repositories
+@using AntSK.Domain.Common.Map
+@attribute [Authorize(Roles = "AntSKAdmin")]
+
+<br />
+<p>PageIndex: @_pageIndex | PageSize: @_pageSize | Total: @_total</p>
+
+<Table @ref="table"
+       TItem="ChatsDto"
+       DataSource="@chatDtoList"
+       Total="_total"
+       @bind-PageIndex="_pageIndex"
+       @bind-PageSize="_pageSize"
+       OnChange="OnChange"
+       Size="TableSize.Small"
+       RowKey="x=>x.Id">
+    <TitleTemplate>
+        <GridRow>
+            <GridCol Span="6">
+                <Title Level="3">近七天用户提问记录</Title>
+            </GridCol>
+            <GridCol Span="6" Offset="12">
+                <Search Placeholder="搜索" @bind-Value="searchString" OnSearch="Search" />
+            </GridCol>
+        </GridRow>
+    </TitleTemplate>
+
+
+    <ColumnDefinitions>
+        <PropertyColumn Title="时间" Width="15%" Property="c=>c.CreateTime" Format="yyyy-MM-dd HH:mm:ss" />
+        <PropertyColumn Title="智能体名称" Width="25%" Property="c=>c.AppName" />
+        <ActionColumn Title="提问内容">
+            <Space>
+                <SpaceItem>
+                    @((MarkupString)(context.Context))
+                </SpaceItem>
+            </Space>
+        </ActionColumn>
+    </ColumnDefinitions>
+</Table>
+
+<br />
+<p>PageIndex: @_pageIndex | PageSize: @_pageSize | Total: @_total</p>
+
+@using System.Text.Json;
+@code {
+    [Inject] IChats_Repositories _chats_Repositories { get; set; }
+
+    ChatsDto[] chatDtoList;
+
+    ITable table;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
+    string searchString;
+    DateTime? searchDateStart;
+    DateTime? searchDateEnd;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitData();
+    }
+
+    public async Task OnChange(QueryModel<ChatsDto> queryModel)
+    {
+        await InitData();
+    }
+
+    private async Task InitData()
+    {
+        if (string.IsNullOrEmpty(searchString))
+        {
+            _total = _chats_Repositories.Count(c => c.UserName == null && c.IsSend == true && c.CreateTime >= DateTime.Now.AddDays(-7));
+            var allChats = _chats_Repositories.GetDB()
+            .Queryable<Chats, Apps>((c, a) => new object[] { SqlSugar.JoinType.Left, c.AppId == a.Id })
+            .Where(c => c.UserName == null && c.IsSend == true && c.CreateTime >= DateTime.Now.AddDays(-7))
+            .Select((c, a) => new ChatsDto
+                {
+                    Id = c.Id,
+                    AppId = c.AppId,
+                    AppName = a.Name,
+                    IsSend = c.IsSend,
+                    Context = c.Context,
+                    CreateTime = c.CreateTime
+                }).OrderByDescending(c => c.CreateTime).ToPageList(_pageIndex, _pageSize);
+            chatDtoList = allChats.ToArray();
+        }
+        else
+        {
+            _total = _chats_Repositories.Count(p => p.UserName.Contains(searchString) || p.Context.Contains(searchString) && p.UserName == null && p.IsSend == true && p.CreateTime >= DateTime.Now.AddDays(-7));
+            var chatList = _chats_Repositories.GetDB().Queryable<Chats, Apps>((c, a) => new object[] {
+            SqlSugar.JoinType.Left,c.AppId==a.Id
+    }).Select((c, a) => new ChatsDto
+    {
+        Id = c.Id,
+        UserName = c.UserName,
+        AppId = c.AppId,
+        IsSend = c.IsSend,
+        SendReveice = c.IsSend ? "发送" : "接收",
+        Context = c.Context,
+        CreateTime = c.CreateTime,
+        AppName = a.Name
+    }).OrderByDescending(c => c.CreateTime).Where(c => c.UserName.Contains(searchString) || c.Context.Contains(searchString)).ToPageList(_pageIndex, _pageSize);
+            chatDtoList = chatList.ToArray();
+        }
+    }
+
+    private async Task Search(string searchKey)
+    {
+        await InitData();
+    }
+
+    public class ChatsDto : Chats
+    {
+        public string AppName { get; set; }
+        public string SendReveice { get; set; }
+    }
+
+}
