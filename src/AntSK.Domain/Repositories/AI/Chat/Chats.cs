@@ -13,11 +13,18 @@ namespace AntSK.Domain.Repositories
         /// <summary>
         /// 用户名
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
+
         /// <summary>
         /// 智能体ID
         /// </summary>
         public string AppId { get; set; }
+
+        /// <summary>
+        /// 智能体名称
+        /// </summary>
+        public string? AppName { get; set; }
+
         /// <summary>
         /// 消息内容
         /// </summary>
@@ -37,5 +44,10 @@ namespace AntSK.Domain.Repositories
         /// 文件名
         /// </summary>
         public string? FileName { get; set; }
+
+        /// <summary>
+        /// IP地址
+        /// </summary>
+        public string? IPAddress { get; set; }
     }
 }

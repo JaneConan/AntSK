@@ -474,6 +474,11 @@
             智能体ID
             </summary>
         </member>
+        <member name="P:AntSK.Domain.Repositories.Chats.AppName">
+            <summary>
+            智能体名称
+            </summary>
+        </member>
         <member name="P:AntSK.Domain.Repositories.Chats.Context">
             <summary>
             消息内容
@@ -494,6 +499,11 @@
             文件名
             </summary>
         </member>
+        <member name="P:AntSK.Domain.Repositories.Chats.IPAddress">
+            <summary>
+            IP地址
+            </summary>
+        </member>
         <member name="P:AntSK.Domain.Repositories.FeedBacks.Content">
             <summary>
             描述
@@ -507,6 +517,11 @@
         <member name="P:AntSK.Domain.Repositories.FeedBacks.Status">
             <summary>
             状态
+            </summary>
+        </member>
+        <member name="P:AntSK.Domain.Repositories.FeedBacks.IPAddress">
+            <summary>
+            IP地址
             </summary>
         </member>
         <member name="P:AntSK.Domain.Repositories.Funs.Path">

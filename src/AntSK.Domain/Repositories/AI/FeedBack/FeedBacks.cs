@@ -26,5 +26,10 @@ namespace AntSK.Domain.Repositories
         /// 状态
         /// </summary>
         public FeedBacksStatus? Status { get; set; } = FeedBacksStatus.Submitted;
+
+        /// <summary>
+        /// IP地址
+        /// </summary>
+        public string? IPAddress { get; set; }
     }
 }

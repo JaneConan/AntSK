@@ -18,6 +18,10 @@ using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 注册 IHttpContextAccessor 服务
+builder.Services.AddHttpContextAccessor();
+
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(config =>
 {

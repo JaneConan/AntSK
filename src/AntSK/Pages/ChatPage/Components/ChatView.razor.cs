@@ -47,6 +47,8 @@ namespace AntSK.Pages.ChatPage.Components
 
         [Inject] protected ILogger<ChatView> _logger { get; set; }
 
+        [Inject] protected IHttpContextAccessor HttpContextAccessor { get; set; }
+
         protected List<Chats> MessageList = [];
         protected string? _messageInput;
         protected string _json = "";
@@ -64,7 +66,6 @@ namespace AntSK.Pages.ChatPage.Components
         {
             await base.OnInitializedAsync();
             await LoadData();
-
         }
 
         protected override async Task OnParametersSetAsync()
@@ -143,12 +144,9 @@ namespace AntSK.Pages.ChatPage.Components
             {
                 await _localStorage.SetItemAsync<List<Chats>>($"msgs:{AppId}", MessageList);
             }
-            else
+            if (MessageList.Count() > 0)
             {
-                if (MessageList.Count() > 0)
-                {
-                    await _chats_Repositories.InsertAsync(MessageList.LastOrDefault());
-                }
+                await _chats_Repositories.InsertAsync(MessageList.LastOrDefault());
             }
         }
 
@@ -202,20 +200,56 @@ namespace AntSK.Pages.ChatPage.Components
                 var filePath = fileList.FirstOrDefault()?.Url;
                 var fileName = fileList.FirstOrDefault()?.FileName;
 
+
+                string userIp = "";
+
+                var httpContext = HttpContextAccessor.HttpContext;
+                if (httpContext != null)
+                {
+                    // 尝试从 X-Forwarded-For 请求头获取客户端 IP 地址
+                    var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+                    if (!string.IsNullOrEmpty(forwardedFor))
+                    {
+                        // X-Forwarded-For 可能包含多个 IP 地址，取第一个
+                        userIp = forwardedFor.Split(',').First().Trim();
+                    }
+                    else
+                    {
+                        // 如果 X-Forwarded-For 不存在，尝试从 X-Real-IP 请求头获取
+                        var realIp = httpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
+                        if (!string.IsNullOrEmpty(realIp))
+                        {
+                            userIp = realIp;
+                        }
+                        else
+                        {
+                            // 如果都不存在，使用默认的 RemoteIpAddress
+                            var remoteIp = httpContext.Connection.RemoteIpAddress;
+                            if (remoteIp != null)
+                            {
+                                userIp = remoteIp.ToString();
+                            }
+                        }
+                    }
+                }
+
                 var chat = new Chats()
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserName = _userName,
                     AppId = AppId,
+                    AppName = app.Name,
                     Context = _messageInput,
                     CreateTime = DateTime.Now,
+                    IPAddress = userIp,
                     IsSend = true
                 };
                 MessageList.Add(chat);
-                if (!string.IsNullOrEmpty(_userName))
-                {
-                    await _chats_Repositories.InsertAsync(chat);
-                }
+
+                //if (!string.IsNullOrEmpty(_userName))
+                //{
+                await _chats_Repositories.InsertAsync(chat);
+                //}
 
                 Sendding = true;
                 Task.Run(async () =>
