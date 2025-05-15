@@ -1,14 +1,9 @@
-﻿using System.ComponentModel;
+﻿using AntSK.Domain.Utils;
+using Serilog;
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Xml;
-using AntSK.Domain.Common;
-using AntSK.Domain.Utils;
 using System.Text.RegularExpressions;
-using Microsoft.SemanticKernel;
-using HtmlAgilityPack;
-using System.Collections.Generic;
-using Serilog;
 
 namespace AntSK.Domain.Domain.Service
 {
@@ -51,7 +46,7 @@ namespace AntSK.Domain.Domain.Service
                     markedMethods.AddRange(type.GetMethods().Where(m =>
                     {
                         DescriptionAttribute da = (DescriptionAttribute)m.GetCustomAttributes(typeof(DescriptionAttribute), true).FirstOrDefault();
-                        return da != null && da.Description.Contains( "AntSK");
+                        return da != null && da.Description.Contains("TCCSK");
                     }));
                 }
             }
@@ -66,7 +61,7 @@ namespace AntSK.Domain.Domain.Service
                     markedMethods.AddRange(type.GetMethods().Where(m =>
                     {
                         DescriptionAttribute da = (DescriptionAttribute)m.GetCustomAttributes(typeof(DescriptionAttribute), true).FirstOrDefault();
-                        return da != null && da.Description.Contains("AntSK");
+                        return da != null && da.Description.Contains("TCCSK");
                     }));
                 }
             }
@@ -74,13 +69,13 @@ namespace AntSK.Domain.Domain.Service
             // 构建方法调用
             foreach (var method in markedMethods)
             {
-                var key = $"{method.DeclaringType.Assembly.GetName().Name}_{method.DeclaringType.Name}_{method.Name}";
+                var key = $"TCCSK_{method.DeclaringType.Name}_{method.Name}";
                 string pattern = "[^a-zA-Z0-9_]";
                 // 使用 '-' 替换非ASCII的正则表达式的字符
                 key = Regex.Replace(key, pattern, "_");
                 _methodCache.TryAdd(key, method);
 
-                var description= method.GetCustomAttribute<DescriptionAttribute>().Description.ConvertToString().Replace("AntSK:","");
+                var description= method.GetCustomAttribute<DescriptionAttribute>().Description.ConvertToString().Replace("TCCSK:", "");
                 var returnType = method.ReturnParameter.GetCustomAttribute<DescriptionAttribute>().Description.ConvertToString();
                 var parameters = method.GetParameters().Select(x => (x.Name, x.ParameterType,x.GetCustomAttribute<DescriptionAttribute>()?.Description)).ToArray();
                 // 假设 _methodInfos 是一个已经定义好的字典，用来保存方法的相关信息

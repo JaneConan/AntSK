@@ -1,6 +1,9 @@
 async function embedChatbot() {
     let timer;
     let isScaledAndTranslated = false;
+    let isDragging = false; // 新增拖拽状态标记
+    let dragStartX, dragStartY; // 拖拽起始坐标
+    let initialLeft, initialTop; // 元素初始位置
 
     const chatBtnId = 'aiagent-chatbot-button';
     const chatWindowId = 'aiagent-chatbot-window';
@@ -34,7 +37,7 @@ async function embedChatbot() {
         </g>
     </svg>`;
 
-    const CloseIcon = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1690535441526" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6367" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M512 1024A512 512 0 1 1 512 0a512 512 0 0 1 0 1024zM305.956571 370.395429L447.488 512 305.956571 653.604571a45.568 45.568 0 1 0 64.438858 64.438858L512 576.512l141.604571 141.531429a45.568 45.568 0 0 0 64.438858-64.438858L576.512 512l141.531429-141.604571a45.568 45.568 0 1 0-64.438858-64.438858L512 447.488 370.395429 305.956571a45.568 45.568 0 0 0-64.438858 64.438858z" fill=${primaryColor} p-id="6368"></path></svg>`;
+    const CloseIcon = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1690535441526" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6367" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M512 1024A512 512 0 1 1 512 0a512 512 0 0 1 0 1024zM305.956571 370.395429L447.488 512 305.956571 653.604571a45.568 45.568 0 1 0 64.438858 64.438858L512 576.512l141.604571 141.531429a45.568 45.568 0 0 0 64.438858-64.438858L576.512 512l141.531429-141.604571a45.568 45.568 0 1 0-64.438858-64.438858L512 447.488 370.395429 305.956571a45.568 45.568 0 0 0-64.438858 64.438858z" fill="${primaryColor}" p-id="6368"></path></svg>`;
     const MessageIconImg = document.createElement('img');
     MessageIconImg.addEventListener('dragstart', e => e.preventDefault()); // 解决图片被拖动时触发下载的问题
     MessageIconImg.src = MessageIconUrl;
@@ -160,25 +163,53 @@ async function embedChatbot() {
         }
     });
 
+    // 拖拽相关事件处理
     ChatBtn.addEventListener('mousedown', (e) => {
         resetTimer();
-        if (!chatBtnMouseX && !chatBtnMouseY) {
-            chatBtnMouseX = e.clientX;
-            chatBtnMouseY = e.clientY;
-        }
-        chatBtnDown = true;
-    });
+        isDragging = true;
 
-    ChatBtn.addEventListener('mousemove', (e) => {
-        resetTimer();
-        if (!chatBtnDown) return;
-        chatBtnDragged = true;
+        // 获取鼠标按下时的坐标
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+
+        // 获取元素当前位置
+        const computedStyle = window.getComputedStyle(ChatBtn);
+        initialLeft = ChatBtn.offsetLeft;
+        initialTop = ChatBtn.offsetTop;
+
+        // 添加拖拽样式
+        ChatBtn.style.transition = 'none';
+
+        // 阻止事件冒泡，避免触发点击事件
         e.stopPropagation();
+        e.preventDefault();
     });
 
-    ChatBtn.addEventListener('mouseup', (e) => {
-        resetTimer();
-        chatBtnDown = false;
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        // 计算移动距离
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+
+        // 设置元素新位置
+        ChatBtn.style.left = `${initialLeft + dx}px`;
+        ChatBtn.style.top = `${initialTop + dy}px`;
+        ChatBtn.style.right = 'auto';
+        ChatBtn.style.bottom = 'auto';
+
+        // 标记为拖拽状态
+        chatBtnDragged = true;
+
+        // 阻止默认行为
+        e.preventDefault();
+    });
+
+    document.addEventListener('mouseup', (e) => {
+        if (isDragging) {
+            isDragging = false;
+            ChatBtn.style.transition = 'transform 0.3s ease';
+        }
     });
 
     ChatBtn.addEventListener('mouseleave', (e) => {

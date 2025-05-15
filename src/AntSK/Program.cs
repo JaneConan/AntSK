@@ -104,7 +104,20 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors("Any");
 
-app.UseStaticFiles();
+// 添加文件版本支持
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // 为 JS 文件添加版本头
+        if (ctx.File.Name.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+        {
+            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+            ctx.Context.Response.Headers.Append("Expires", "0");
+        }
+    }
+});
 
 //扩展初始化实现
 app.CodeFirst();
